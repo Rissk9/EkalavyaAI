@@ -15,3 +15,5 @@ uvicorn[standard]>=0.30.0
 requests
 supabase
 python-multipart
+numpy
+scikit-learn

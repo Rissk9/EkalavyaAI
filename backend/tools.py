@@ -142,9 +142,16 @@ def leetcode_tool(username: str) -> str:
 
     try:
         results = {}
-        for key, payload in queries.items():
+        
+        def fetch_category(key, payload):
             res = requests.post(url, json=payload, headers=headers, timeout=10)
-            results[key] = res.json().get("data", {})
+            return key, res.json().get("data", {})
+
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            future_to_key = {executor.submit(fetch_category, k, p): k for k, p in queries.items()}
+            for future in future_to_key:
+                key, data = future.result()
+                results[key] = data
 
         ac = results["solved"].get("matchedUser", {}).get("submitStatsGlobal", {}).get("acSubmissionNum", [])
         easy   = next((x["count"] for x in ac if x["difficulty"] == "Easy"), 0)

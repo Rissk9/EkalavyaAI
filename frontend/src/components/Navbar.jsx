@@ -32,16 +32,27 @@ export default function Navbar() {
             <li>
               <Link
                 to="/ai-dashboard"
-                className={`flex items-center gap-3 px-4 py-3 font-label uppercase tracking-[0.1em] text-xs rounded-lg transition-all duration-300 ${
+                className={`flex items-center gap-3 px-4 py-3 font-label uppercase tracking-[0.1em] text-xs transition-all duration-300 ${
                   isMentor
                     ? 'text-[#FFD700] border-b-2 border-[#FFD700] bg-gradient-to-b from-[#FFD700]/10 to-transparent'
                     : 'text-[#E6DFF5]/70 hover:bg-[#2B2838] hover:text-[#E6DFF5]'
                 }`}
               >
-                <span className="material-symbols-outlined">psychology</span>
+                <span className="material-symbols-outlined text-sm">psychology</span>
                 <span>AI MENTOR</span>
               </Link>
             </li>
+            {isMentor && (
+              <li>
+                <button
+                  onClick={() => window.dispatchEvent(new CustomEvent('open-resume-helper'))}
+                  className="flex items-center gap-2 px-6 py-2.5 ml-4 solar-gradient rounded-xl text-on-primary font-label uppercase tracking-[0.15em] text-[11px] font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition-all duration-300 animate-pulse-solar active:scale-95"
+                >
+                  <span className="material-symbols-outlined text-sm font-bold">auto_awesome</span>
+                  <span>RESUME HELPER</span>
+                </button>
+              </li>
+            )}
           </ul>
         </nav>
 

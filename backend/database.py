@@ -159,5 +159,32 @@ class DatabaseManager:
             print(f"Error getting companies: {e}")
             return []
 
+    def delete_resume(self) -> bool:
+        """Delete resume from storage and clear database fields."""
+        try:
+            # 1. Get current file path
+            data = self.get_user_data()
+            if not data or not data.get("resume_file_path"):
+                return True # Already empty
+            
+            file_path = data["resume_file_path"]
+            
+            # 2. Delete from storage if exists
+            try:
+                self.supabase.storage.from_("resumes").remove([file_path])
+            except Exception as e:
+                print(f"[DB] Storage removal warning: {e}")
+            
+            # 3. Clear DB fields
+            self.supabase.table("app_config").update({
+                "resume_file_path": None,
+                "resume_text": None
+            }).eq("id", 1).execute()
+            
+            return True
+        except Exception as e:
+            print(f"[DB] Error deleting resume: {e}")
+            return False
+
 # Global instance
 db_manager = DatabaseManager()

@@ -440,14 +440,47 @@ class SkillMatcher:
         
         return skill_matches
     
-    def score_skills(self, resume_text: str) -> Tuple[float, Dict]:
+    def score_skills(self, resume_text: str, jd_keywords: List[str] = None) -> Tuple[float, Dict]:
         """
-        Score resume based on skill match to role.
+        Score resume based on skill match to role, with JD keyword boosting.
         
         Returns:
             - skill_score (0-100)
             - detailed breakdown
         """
+        found_skills = self.extract_skills_from_text(resume_text)
+        
+        # Calculate scores with weights
+        total_weight = sum(self.skill_weights.values())
+        if jd_keywords:
+            # Add dynamic weights for JD keywords
+            jd_weight_total = len(jd_keywords) * 0.1  # Arbitrary weight for each JD keyword
+            total_weight += jd_weight_total
+
+        matched_score = 0
+        matched_details = {}
+        
+        for skill, count in found_skills:
+            weight = self.skill_weights.get(skill, 0.05) # Small base weight if not in role
+            
+            # Boost if found in JD
+            if jd_keywords and skill in jd_keywords:
+                weight += 0.5 # SIGNIFICANT BOOST from previous 0.1
+            
+            matched_score += min(count, 3) * weight * 20 # Up to 3 mentions count
+            matched_details[skill] = {
+                "count": count,
+                "weight": weight
+            }
+            
+        # Normalize and cap
+        skill_score = min((matched_score / total_weight) * 10, 100) if total_weight > 0 else 0
+        
+        return skill_score, {
+            "matched_skills": matched_details,
+            "total_matched": len(found_skills),
+            "missing_skills": {s: w for s, w in self.skill_weights.items() if s not in matched_details}
+        }
         skill_matches = self.extract_skills_from_text(resume_text)
         
         matched_skills = {}
@@ -1016,6 +1049,40 @@ class AdvancedATSScorer:
         self.project_analyzer = ProjectAnalyzer()
         self.structure_analyzer = ResumeStructureAnalyzer()
         self.relevance_analyzer = RelevanceAnalyzer()
+        self.role_mappings = {
+            "frontend": "frontend_engineer",
+            "react": "frontend_engineer",
+            "ui": "frontend_engineer",
+            "ux": "frontend_engineer",
+            "ml": "data_scientist",
+            "machine learning": "data_scientist",
+            "data science": "data_scientist",
+            "ai": "data_scientist",
+            "devops": "devops_engineer",
+            "cloud": "devops_engineer",
+            "infra": "devops_engineer",
+            "data engineer": "data_engineer",
+            "etl": "data_engineer",
+            "sql": "backend_engineer",
+            "api": "backend_engineer",
+            "backend": "backend_engineer"
+        }
+    
+    def _detect_role(self, text: str) -> str:
+        """Detect the most likely role template from JD text"""
+        if not text:
+            return self.role_type
+            
+        text_lower = text.lower()
+        counts = Counter()
+        for keyword, role in self.role_mappings.items():
+            if keyword in text_lower:
+                counts[role] += 1
+        
+        if not counts:
+            return self.role_type
+            
+        return counts.most_common(1)[0][0]
     
     def score(
         self, 
@@ -1035,11 +1102,27 @@ class AdvancedATSScorer:
             Complete ATS score breakdown
         """
         
+        # Dynamic Role Pivot: If JD is provided, adapt the entire scoring template
+        detected_role = self._detect_role(job_description)
+        if job_description and detected_role != self.role_type:
+            print(f"[ATS] Dynamic Pivot: Detected role '{detected_role}' from JD. Updating weights...")
+            self.role_type = detected_role
+            self.skill_matcher = SkillMatcher(detected_role)
+            # Re-initialize role_keywords for the new template
+            role_keywords = list(self.skill_matcher.skill_weights.keys())
+
         if role_keywords is None:
             role_keywords = list(self.skill_matcher.skill_weights.keys())
         
+        # Dynamic context from JD
+        jd_keywords = []
+        if job_description:
+            jd_keywords = self._extract_jd_keywords(job_description)
+            # Merge JD keywords into role keywords for Experience analysis
+            role_keywords = list(set(role_keywords + jd_keywords))
+
         # Component scores
-        skill_score, skill_details = self.skill_matcher.score_skills(resume_text)
+        skill_score, skill_details = self.skill_matcher.score_skills(resume_text, jd_keywords)
         experience_score, experience_details = self.experience_analyzer.analyze(
             resume_text, role_keywords
         )
@@ -1050,16 +1133,26 @@ class AdvancedATSScorer:
         )
         
         # Boost relevance with a base floor (TF-IDF is often harsh)
-        relevance_score = max(relevance_score, 40) 
-        
-        # Weighted final score — balanced weights
-        total_score = (
-            skill_score * 0.30 +      # Skill match (most important)
-            experience_score * 0.20 +  # Experience quality
-            project_score * 0.15 +     # Project quality
-            structure_score * 0.20 +   # Resume structure
-            relevance_score * 0.15     # Job relevance
-        )
+        # relevance_score = max(relevance_score, 40) # REMOVED FLOOR FOR ACCURACY        
+        # Dynamic weighted final score - shift focus to JD if present
+        if job_description:
+            # When JD exists, we care much more about specific relevance
+            total_score = (
+                skill_score * 0.35 +      # Skill match
+                experience_score * 0.10 +  # Experience
+                project_score * 0.10 +     # Projects
+                structure_score * 0.10 +   # Structure
+                relevance_score * 0.35     # Job relevance (Direct TF-IDF match)
+            )
+        else:
+            # General template-based scoring
+            total_score = (
+                skill_score * 0.30 +
+                experience_score * 0.20 +
+                project_score * 0.15 +
+                structure_score * 0.20 +
+                relevance_score * 0.15
+            )
         
         # Scale linearly to 10
         total_score = total_score / 10
@@ -1193,6 +1286,26 @@ class AdvancedATSScorer:
             )
         
         return recommendations[:5]  # Top 5 recommendations
+
+    def _extract_jd_keywords(self, jd_text: str) -> List[str]:
+        """
+        Simple keyword extractor for technological terms in JD.
+        In a production environment, this would use a proper NER model.
+        """
+        jd_lower = jd_text.lower()
+        extracted = []
+        
+        # Check against our comprehensive synonyms list
+        for canonical, synonyms in SKILL_SYNONYMS.items():
+            if jd_lower.count(canonical) > 0:
+                extracted.append(canonical)
+                continue
+            for syn in synonyms:
+                if jd_lower.count(syn) > 0:
+                    extracted.append(canonical)
+                    break
+        
+        return list(set(extracted))
 
 if __name__ == "__main__":
     uvicorn.run("advancedats:app", host="0.0.0.0", port=8001, reload=True)

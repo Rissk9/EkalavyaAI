@@ -1,29 +1,32 @@
-// eslint-disable-next-line no-unused-vars
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import ResumeHelperModal from '../components/ResumeHelperModal';
 
 export default function AiDashboardPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [githubUsername, setGithubUsername] = useState(() => localStorage.getItem('ekalavya_github') || '');
   const [leetcodeUsername, setLeetcodeUsername] = useState(() => localStorage.getItem('ekalavya_leetcode') || '');
+  const [jobDescription, setJobDescription] = useState(() => localStorage.getItem('ekalavya_jd') || '');
   const [summary, setSummary] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showJdInput, setShowJdInput] = useState(false);
   const [resumeFile, setResumeFile] = useState(null);
   const [hasResume, setHasResume] = useState(() => localStorage.getItem('ekalavya_resume_exists') === 'true');
   const [atsData, setAtsData] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('ekalavya_ats')) || null; } 
+    try { return JSON.parse(localStorage.getItem('ekalavya_ats')) || null; }
     catch { return null; }
   });
   const [messages, setMessages] = useState([
     { role: 'ai', label: 'AI MENTOR', text: "Hello this is Lakshya, your personal AI mentor who is here to help you in all your job related endeavours" },
   ]);
   const [input, setInput] = useState('');
+  const [isResumeHelperOpen, setIsResumeHelperOpen] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -57,8 +60,14 @@ export default function AiDashboardPage() {
   }, [isSending, loadingMessages.length]);
 
   useEffect(() => {
+    const handleOpenHelper = () => setIsResumeHelperOpen(true);
+    window.addEventListener('open-resume-helper', handleOpenHelper);
+    return () => window.removeEventListener('open-resume-helper', handleOpenHelper);
+  }, []);
+
+  useEffect(() => {
     if (location.state?.initialPrompt && !hasTriggeredRef.current && !isSending) {
-      hasTriggeredRef.current = true; 
+      hasTriggeredRef.current = true;
       // Need a tiny timeout to ensure react state (like github/leetcode names) is loaded 
       // if they are fetched from somewhere, though in this component they are typed.
       setTimeout(() => {
@@ -66,7 +75,7 @@ export default function AiDashboardPage() {
       }, 500);
       navigate(location.pathname, { replace: true, state: {} });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state]);
 
   const handleSend = (overrideText = null, isMasked = false) => {
@@ -153,12 +162,18 @@ export default function AiDashboardPage() {
       // Persist locally
       localStorage.setItem('ekalavya_github', githubUsername);
       localStorage.setItem('ekalavya_leetcode', leetcodeUsername);
+      localStorage.setItem('ekalavya_jd', jobDescription);
 
       // Step 2: Upload resume if selected
-      if (resumeFile) {
-        console.log('Uploading resume file:', resumeFile.name, 'Size:', resumeFile.size);
+      if (resumeFile || hasResume) {
+        console.log('Processing resume scoring. New file:', !!resumeFile);
         const formData = new FormData();
-        formData.append('file', resumeFile);
+        if (resumeFile) {
+          formData.append('file', resumeFile);
+        }
+        if (jobDescription.trim()) {
+          formData.append('job_description', jobDescription);
+        }
 
         console.log('Sending FormData to:', `${apiBase}/upload-resume`);
 
@@ -189,7 +204,7 @@ export default function AiDashboardPage() {
         localStorage.setItem('ekalavya_ats', JSON.stringify(resumeData.ats_data));
         setHasResume(true);
         localStorage.setItem('ekalavya_resume_exists', 'true');
-        
+
         setMessages(prev => [...prev, {
           role: 'ai',
           label: 'SYSTEM',
@@ -220,6 +235,32 @@ export default function AiDashboardPage() {
           text: `Error saving your data: ${error.message}. Please check if backend is running on port 8000.`,
         },
       ]);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteResume = async () => {
+    if (!confirm('Are you sure you want to permanently delete your resume?')) return;
+    
+    try {
+      setIsSaving(true);
+      const apiBase = import.meta?.env?.VITE_BACKEND_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiBase}/resume`, { method: 'DELETE' });
+      const data = await response.json();
+
+      if (data.success) {
+        setHasResume(false);
+        setResumeFile(null);
+        setAtsData(null);
+        localStorage.removeItem('ekalavya_resume_exists');
+        localStorage.removeItem('ekalavya_ats');
+        setMessages(prev => [...prev, { role: 'ai', label: 'AI MENTOR', text: '🗑️ Your resume has been deleted and profile data cleared.' }]);
+      } else {
+        alert(data.message || 'Failed to delete resume');
+      }
+    } catch (error) {
+      console.error('Error deleting resume:', error);
     } finally {
       setIsSaving(false);
     }
@@ -262,7 +303,7 @@ export default function AiDashboardPage() {
               onClick={() => navigate('/')}
               className="flex items-center gap-3 w-fit group"
             >
-              <span className="text-4xl font-bold tracking-tighter text-[#FFD700] font-headline uppercase group-hover:text-[#FFF] transition-colors">EKALAVYA</span>
+              <span className="text-4xl font-bold tracking-tighter text-[#FFD700] font-headline uppercase group-hover:text-[#FFF] transition-colors">LAKSHYA AI</span>
             </button>
           </div>
 
@@ -278,7 +319,7 @@ export default function AiDashboardPage() {
                     <span className="font-label text-[9px] text-primary-container tracking-widest">{msg.label}</span>
                     <div className="bg-surface-container-high p-4 rounded-xl rounded-tl-none text-sm text-on-surface-variant leading-relaxed">
                       <div className="prose prose-sm prose-invert max-w-none prose-p:leading-relaxed prose-pre:p-0 prose-td:border prose-th:border prose-td:border-outline-variant/30 prose-th:border-outline-variant/30 prose-th:bg-surface-container-highest prose-table:border-collapse">
-                        <ReactMarkdown 
+                        <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           rehypePlugins={[rehypeRaw]}
                         >
@@ -296,9 +337,9 @@ export default function AiDashboardPage() {
                   </div>
                 )
               ))}
-              
+
               {isSending && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex flex-col gap-3 max-w-[85%] animate-pulse"
@@ -321,7 +362,7 @@ export default function AiDashboardPage() {
                   </div>
                 </motion.div>
               )}
-              
+
               <div ref={messagesEndRef} />
             </div>
             <div className="relative">
@@ -369,12 +410,24 @@ export default function AiDashboardPage() {
                   className="hidden"
                   id="resume-upload"
                 />
-                <label
-                  htmlFor="resume-upload"
-                  className="w-fit px-4 py-2 bg-transparent border border-outline-variant/30 rounded-lg text-xs font-label tracking-widest text-on-surface hover:bg-surface-container-high transition-all cursor-pointer"
-                >
-                  {resumeFile ? 'CHANGE RESUME' : hasResume ? 'REPLACE CURRENT RESUME' : 'UPLOAD RESUME'}
-                </label>
+                <div className="flex gap-2 items-center">
+                  <label
+                    htmlFor="resume-upload"
+                    className="flex-1 px-4 py-2 bg-transparent border border-outline-variant/30 rounded-lg text-[10px] font-label tracking-widest text-on-surface hover:bg-surface-container-high transition-all cursor-pointer text-center uppercase"
+                  >
+                    {resumeFile ? 'CHANGE RESUME' : hasResume ? 'REPLACE CURRENT RESUM' : 'UPLOAD RESUME'}
+                  </label>
+                  {(resumeFile || hasResume) && (
+                    <button
+                      onClick={handleDeleteResume}
+                      disabled={isSaving}
+                      className="p-2 text-outline-variant hover:text-error transition-colors flex items-center justify-center border border-outline-variant/30 rounded-lg"
+                      title="Delete Resume"
+                    >
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="border-b border-outline-variant/30 pb-2">
                 <label className="font-label text-[10px] text-outline-variant tracking-wider uppercase">GitHub Username</label>
@@ -406,17 +459,70 @@ export default function AiDashboardPage() {
           </div>
 
           <div className="flex flex-col gap-6 items-center shrink-0 overflow-y-auto">
-            <div className="w-full flex justify-start">
+            <div className="w-full flex items-center justify-between">
               <span className="font-label text-[10px] tracking-[0.2em] text-on-surface-variant uppercase">ATS SCORE</span>
+              <button 
+                onClick={() => setShowJdInput(!showJdInput)}
+                className={`flex items-center gap-1.5 px-2 py-1 rounded text-[9px] font-label tracking-wider transition-all ${
+                  showJdInput ? 'bg-primary-container text-on-primary' : 'bg-surface-container-high text-on-surface-variant hover:text-primary-container'
+                }`}
+              >
+                <span className="material-symbols-outlined text-xs">
+                  {showJdInput ? 'close' : 'description'}
+                </span>
+                {showJdInput ? 'CLOSE JD' : 'SET JOB JD'}
+              </button>
             </div>
-            
+
+            <AnimatePresence>
+              {showJdInput && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="w-full overflow-hidden"
+                >
+                  <div className="p-4 bg-surface-container-high rounded-lg border border-primary-container/20 flex flex-col gap-3">
+                    <label className="font-label text-[9px] text-primary-container tracking-widest uppercase">Target Job Description</label>
+                    <textarea
+                      placeholder="Paste the job description here for better ATS scoring relevance..."
+                      className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded p-3 text-xs font-body text-on-surface-variant focus:outline-none focus:border-primary-container min-h-[100px] resize-none"
+                      value={jobDescription}
+                      onChange={(e) => setJobDescription(e.target.value)}
+                    />
+                    <div className="flex justify-between items-center">
+                      <span className="text-[8px] font-label text-outline-variant uppercase">Scores update on Save</span>
+                      {hasResume && (
+                        <span className="text-[8px] font-label text-primary-container uppercase flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[10px]">check_circle</span>
+                          Resume Active
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="flex flex-row w-full gap-6 items-start">
               {/* Left Column: Gauge and Breakdown */}
               <div className="flex flex-col gap-6 shrink-0 w-[180px]">
                 <div className="relative flex items-center justify-center w-[160px] h-[160px] mx-auto">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
                     <circle cx="100" cy="100" fill="transparent" r="90" stroke="#2A2A3A" strokeWidth="12" />
-                    <circle className="gauge-ring" cx="100" cy="100" fill="transparent" r="90" stroke="#FFD700" strokeLinecap="round" strokeWidth="12" />
+                    <circle
+                      className="gauge-ring"
+                      cx="100"
+                      cy="100"
+                      fill="transparent"
+                      r="90"
+                      stroke="#FFD700"
+                      strokeLinecap="round"
+                      strokeWidth="12"
+                      style={{
+                        strokeDashoffset: 565 - ((atsData?.component_breakdown?.total_score || 0) / 10) * 565
+                      }}
+                    />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="font-headline text-4xl font-bold text-primary-container">
@@ -462,7 +568,7 @@ export default function AiDashboardPage() {
                     </div>
                   </div>
                 )}
-                
+
                 {atsData?.missing_critical_skills && atsData.missing_critical_skills.length > 0 && (
                   <div className="flex flex-col gap-2">
                     <span className="font-label text-[9px] text-[#f87171] uppercase tracking-wider">Missing Critical Skills</span>
@@ -491,11 +597,11 @@ export default function AiDashboardPage() {
                   <div className="flex flex-col gap-2">
                     <span className="font-label text-[9px] text-primary-container uppercase tracking-wider">Recommendations</span>
                     <div className="flex flex-col gap-1.5">
-                       {atsData.recommendations.map((rec, i) => (
-                         <div key={i} className="text-xs text-on-surface font-body p-2 bg-surface-container-high rounded border border-outline-variant/10">
-                           {rec}
-                         </div>
-                       ))}
+                      {atsData.recommendations.map((rec, i) => (
+                        <div key={i} className="text-xs text-on-surface font-body p-2 bg-surface-container-high rounded border border-outline-variant/10">
+                          {rec}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -510,6 +616,14 @@ export default function AiDashboardPage() {
           </div>
         </aside>
       </main>
+
+      <ResumeHelperModal 
+        isOpen={isResumeHelperOpen}
+        onClose={() => setIsResumeHelperOpen(false)}
+        githubUsername={githubUsername}
+        leetcodeUsername={leetcodeUsername}
+        initialJD={jobDescription}
+      />
 
     </motion.div>
   );

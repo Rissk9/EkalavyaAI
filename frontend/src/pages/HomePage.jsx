@@ -1,20 +1,60 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const ORBITS = [
-  { id: 'backend', role: 'Backend Engineering', label: 'BACKEND ENGINEERING', w: 450, h: 250, seconds: 60, delay: 0 },
-  { id: 'frontend', role: 'Frontend Engineering', label: 'FRONTEND ENGINEERING', w: 250, h: 450, seconds: 80, delay: -30 },
-  { id: 'data', role: 'Data Science', label: 'DATA SCIENCE', w: 650, h: 350, seconds: 100, delay: -70 },
-  { id: 'product', role: 'Product Management', label: 'PRODUCT MANAGEMENT', w: 350, h: 650, seconds: 120, delay: -110 },
+const BASE_ORBITS = [
+  { w: 540, h: 300, seconds: 60, delay: 0 },
+  { w: 300, h: 540, seconds: 80, delay: -30 },
+  { w: 780, h: 420, seconds: 100, delay: -70 },
+  { w: 420, h: 780, seconds: 120, delay: -110 },
+  { w: 660, h: 540, seconds: 90, delay: -50 },
+  { w: 540, h: 660, seconds: 110, delay: -90 },
+  { w: 900, h: 300, seconds: 130, delay: -20 },
+  { w: 300, h: 900, seconds: 140, delay: -80 },
 ];
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const [orbits, setOrbits] = useState([]);
 
-  const filteredOrbits = ORBITS.filter(o =>
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const apiBase = import.meta?.env?.VITE_BACKEND_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiBase}/roles`);
+        const data = await response.json();
+        
+        if (data.roles) {
+          const dynamicOrbits = data.roles.map((roleObj, index) => {
+            const base = BASE_ORBITS[index % BASE_ORBITS.length];
+            // Provide a random-like mix to visual values to ensure they do not clump tightly
+            // if you have many roles fetched from the db.
+            const mixW = base.w + (index * 15 % 80);
+            const mixH = base.h + (index * 20 % 90);
+            
+            return {
+               id: roleObj.id,
+               role: roleObj.name,
+               label: roleObj.name.toUpperCase(),
+               w: mixW,
+               h: mixH,
+               seconds: base.seconds + (index % 5) * 5,
+               delay: base.delay - (index % 10) * 2
+            };
+          });
+          setOrbits(dynamicOrbits);
+        }
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+      }
+    };
+    
+    fetchRoles();
+  }, []);
+
+  const filteredOrbits = orbits.filter(o =>
     o.role.toLowerCase().includes(search.toLowerCase())
   );
 

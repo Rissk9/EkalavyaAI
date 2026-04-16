@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const POSTS = [
@@ -52,15 +52,99 @@ const getCommentsForPost = (post, idx) => {
 export default function CompanyForumPage() {
   const { orbitId, companyId } = useParams();
   const navigate = useNavigate();
+  const [openCommentsIdx, setOpenCommentsIdx] = useState(null);
+  const [roleData, setRoleData] = useState(null);
+
+  useEffect(() => {
+    const fetchOrbitData = async () => {
+      try {
+        const apiBase = import.meta?.env?.VITE_BACKEND_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiBase}/orbit-data/${orbitId}`);
+        const data = await response.json();
+        
+        if (data.role) {
+          setRoleData(data.role);
+        }
+      } catch (error) {
+        console.error('Error fetching orbit data:', error);
+      }
+    };
+    
+    fetchOrbitData();
+  }, [orbitId]);
 
   const companyName = companyId.charAt(0).toUpperCase() + companyId.slice(1);
-  const orbitDisplay = orbitId === 'backend' ? 'Backend Engineering'
-    : orbitId === 'frontend' ? 'Frontend Engineering'
-    : orbitId === 'data' ? 'Data Science'
-    : orbitId === 'product' ? 'Product Management'
-    : orbitId;
+  const orbitName = orbitId ? orbitId.charAt(0).toUpperCase() + orbitId.slice(1) : 'Orbit';
+  const orbitDisplay = roleData?.name ? roleData.name : orbitName;
 
-  const [openCommentsIdx, setOpenCommentsIdx] = useState(null);
+  const handleGoToAiMentor = () => {
+    const promptText = `You are an expert career mentor and hiring strategist.
+
+Give a detailed, practical, and structured analysis for a candidate preparing for the role of ${orbitDisplay} at ${companyName}.
+
+Your response must be highly actionable, realistic, and tailored to current industry expectations.
+
+Candidate Context:
+- Resume Summary: {Evaluate based on loaded resume data}
+- GitHub Profile: {Evaluate based on mapped Github context}
+- LeetCode Profile: {Evaluate based on mapped LeetCode context}
+
+Your task is NOT just to explain the role, but to evaluate the candidate against real hiring expectations and provide a clear reality check.
+
+Cover the following sections:
+
+1. Role Expectations
+- What skills and knowledge are expected for this role at ${companyName}?
+- What differentiates this role from similar roles in other companies?
+
+2. Required Skills Breakdown
+- Core technical skills (e.g., DSA, system design, ML, etc.)
+- Tools, languages, and frameworks commonly expected
+- Level of depth expected (beginner / intermediate / advanced)
+
+3. Candidate vs Role Gap Analysis (VERY IMPORTANT)
+- Based on the candidate context, where does the candidate currently stand?
+- What are their strengths?
+- What are the critical gaps?
+- Are they underprepared, moderately prepared, or close to ready?
+
+4. Interview Process Insights
+- Typical interview rounds (OA, DSA, system design, behavioral, etc.)
+- What each round tests
+- Common mistakes candidates make
+
+5. Preparation Strategy (PERSONALIZED)
+- Step-by-step plan based on the candidate's current level
+- What to prioritize first
+- What to ignore for now
+- Realistic timeline to reach interview-ready level
+
+6. Resume & Profile Feedback
+- What is missing in the candidate's profile?
+- How to improve resume specifically for ${companyName}
+- What projects or signals would significantly improve chances
+
+7. Realistic Difficulty Level
+- How competitive this role is
+- Approximate level of candidates typically selected
+- Honest assessment of how far the candidate is from that level
+
+8. Final Verdict
+- A clear statement:
+  - "Not ready"
+  - "Partially ready"
+  - "Interview ready"
+- One-line reasoning for the verdict
+
+Important:
+- Be brutally honest but constructive
+- Do NOT give generic advice
+- Base evaluation on real hiring standards
+- Avoid vague statements like "practice more"
+- Focus on actionable improvements`;
+
+    navigate('/ai-dashboard', { state: { initialPrompt: promptText, maskPrompt: true } });
+  };
 
   return (
     <motion.div
@@ -103,7 +187,7 @@ export default function CompanyForumPage() {
 
         <div className="mt-auto">
           <button
-            onClick={() => navigate('/ai-dashboard')}
+            onClick={handleGoToAiMentor}
             className="w-full py-4 px-4 glass-void border border-[#FFD700]/20 text-[#FFD700] rounded-lg font-headline text-[10px] tracking-widest uppercase flex items-center justify-between hover:bg-[#FFD700] hover:text-[#0a081c] transition-all group"
           >
             GO TO AI MENTOR
@@ -120,10 +204,7 @@ export default function CompanyForumPage() {
             <p className="font-headline text-[10px] tracking-[0.3em] text-[#FFD700] uppercase font-bold">{companyName.toUpperCase()} RING</p>
             <h1 className="font-headline text-5xl font-black text-[#E6DFF5] tracking-tighter">{orbitDisplay}</h1>
           </div>
-          <button className="solar-gradient text-[#3a3000] px-8 py-3 rounded-lg font-headline font-bold text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(255,215,0,0.1)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all flex items-center gap-2">
-            <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
-            Transmit Signal
-          </button>
+          
         </header>
 
         {/* Filters/Sort */}

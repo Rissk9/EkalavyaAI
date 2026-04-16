@@ -1,25 +1,50 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
-const COMPANIES = [
-  { name: 'Microsoft', icon: 'potted_plant' },
-  { name: 'Google', icon: 'adjust' },
-  { name: 'Razorpay', icon: 'payments' },
-  { name: 'Flipkart', icon: 'shopping_bag' },
-  { name: 'Amazon', icon: 'rocket_launch' },
-];
+const FALLBACK_ICONS = ['domain', 'business', 'corporate_fare', 'apartment', 'location_city', 'work', 'rocket_launch', 'lightbulb'];
 
 export default function OrbitPage() {
   const { orbitId } = useParams();
   const navigate = useNavigate();
+  const [roleData, setRoleData] = useState(null);
+  const [companies, setCompanies] = useState([]);
+
+  useEffect(() => {
+    const fetchOrbitData = async () => {
+      try {
+        const apiBase = import.meta?.env?.VITE_BACKEND_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiBase}/orbit-data/${orbitId}`);
+        const data = await response.json();
+        
+        if (data.role) {
+          setRoleData(data.role);
+        }
+        
+        if (data.companies) {
+          const mappedCompanies = data.companies.map((company, i) => {
+             const nameLower = company.name.toLowerCase();
+             let icon = FALLBACK_ICONS[i % FALLBACK_ICONS.length];
+             if (nameLower.includes('google')) icon = 'adjust';
+             if (nameLower.includes('microsoft')) icon = 'potted_plant';
+             if (nameLower.includes('razorpay')) icon = 'payments';
+             if (nameLower.includes('amazon')) icon = 'rocket_launch';
+             if (nameLower.includes('flipkart') || nameLower.includes('myntra')) icon = 'shopping_bag';
+             return { name: company.name, icon };
+          });
+          setCompanies(mappedCompanies);
+        }
+      } catch (error) {
+        console.error('Error fetching orbit data:', error);
+      }
+    };
+    
+    fetchOrbitData();
+  }, [orbitId]);
 
   const orbitName = orbitId.charAt(0).toUpperCase() + orbitId.slice(1);
-  const orbitDisplay = orbitId === 'backend' ? 'Backend Engineering'
-    : orbitId === 'frontend' ? 'Frontend Engineering'
-    : orbitId === 'data' ? 'Data Science'
-    : orbitId === 'product' ? 'Product Management'
-    : orbitName;
+  const orbitDisplay = roleData?.name ? roleData.name : orbitName;
 
   return (
     <motion.div
@@ -55,9 +80,9 @@ export default function OrbitPage() {
             <div className="h-px flex-grow mx-8 bg-outline-variant/20" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {COMPANIES.map(company => (
+            {companies.map((company, index) => (
               <div
-                key={company.name}
+                key={`${company.name}-${index}`}
                 onClick={() => navigate(`/community/${orbitId}/${company.name.toLowerCase()}`)}
                 className="group h-[118px] w-full bg-[#1C1A29] rounded-lg p-3 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-2px] hover:bg-[#2B2838] cursor-pointer"
               >
@@ -114,7 +139,7 @@ export default function OrbitPage() {
               <div className="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center mb-6">
                 <span className="material-symbols-outlined text-[#FFD700] text-[20px]">psychology</span>
               </div>
-              <h3 className="font-headline text-2xl font-bold mb-3">AI Mentor - {orbitName} Mode</h3>
+              <h3 className="font-headline text-2xl font-bold mb-3">AI Mentor - {orbitDisplay} Mode</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed max-w-sm">Accelerate your trajectory with our synthetic intelligence. Real-time code reviews, system design audits, and growth mapping.</p>
             </div>
             <div className="relative z-10 mt-8 flex justify-start">

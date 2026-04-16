@@ -11,11 +11,13 @@ from backend.tools import resume_tool, github_tool, leetcode_tool
 # Mentor persona (kept here so the whole LLM behaviour is in one file)
 # ---------------------------------------------------------------------------
 MENTOR_PERSONA = """
-You are "Pathfinder" — an experienced Indian career mentor who has guided 500+ students
+You are "Lakshya" — an experienced Indian career mentor who has guided 500+ students
 from Tier-2 and Tier-3 colleges across India into meaningful tech careers. The current month is April
 and the year is 2026. You will always provide roadmaps with respect to this month and year.
 
 YOUR BACKGROUND:
+-YOU ARE BRUTALLY HONEST U give a direct answer first and then elaborate. 
+ if its not possible then you say it straight forward.
 - You understand the reality of students from cities like Bhopal, Coimbatore, Nagpur,
   Jaipur, Vizag, Trichy, Indore — not just Bangalore and Hyderabad and delhi.
 - You know that most of these students don't have IIT/NIT privilege, alumni networks,
@@ -273,7 +275,39 @@ def decision_node(state: AgentState) -> dict:
             }
         }
 
-    # --- 3. OFF-TOPIC ---
+    # --- 3. FAREWELL ---
+    farewell_triggers = [
+        "bye", "goodbye", "see you", "see ya", "see you later",
+        "take care", "catch you later", "later", "peace",
+        "thanks bye", "ok bye", "alright bye",
+        "talk to you later", "ttyl",
+        "have a nice day", "have a good day",
+        "good night", "gn", "bye bye"
+    ]
+
+    is_farewell = any(
+        query == f or 
+        query.startswith(f + " ") or 
+        query.startswith(f + ",") or 
+        query.startswith(f + "!") 
+        for f in farewell_triggers
+    )
+
+    if is_farewell:
+        print("👋 Farewell detected")
+        return {
+            "decision": {
+                "use_resume": False,
+                "use_github": False,
+                "use_leetcode": False,
+                "off_topic": False,
+                "emotional": False,
+                "greeting": False,
+                "farewell": True
+            }
+        }
+
+    # --- 4. OFF-TOPIC ---
     print("🚫 Off-topic query detected")
     return {
         "decision": {
@@ -281,7 +315,9 @@ def decision_node(state: AgentState) -> dict:
             "use_github": False,
             "use_leetcode": False,
             "off_topic": True,
-            "emotional": False
+            "emotional": False,
+            "greeting": False,
+            "farewell": False
         }
     }
 
@@ -342,7 +378,7 @@ def response_node(state: AgentState) -> dict:
             {role_hint}
 
             Respond with a warm, friendly, and brief greeting (2-4 lines max).
-            - Introduce yourself as Pathfinder naturally dont mention tier or anything
+            - Introduce yourself as Lakshya naturally dont mention tier or anything
             - Say something encouraging and genuine dont mention cities
             - End with ONE open question to understand what they need help with
               (e.g., their year of study, what topic they want to explore)
@@ -355,7 +391,7 @@ def response_node(state: AgentState) -> dict:
     if decision.get("off_topic"):
         rejection = (
             "🚫 **That's outside my scope!**\n\n"
-            "I'm Pathfinder — your career mentor for tech placements, "
+            "I'm Lakshya — your career mentor for tech placements, "
             "resume building, GitHub improvement, and interview prep.\n\n"
             "I can help you with:\n"
             "- 📄 Resume evaluation\n"
@@ -367,6 +403,18 @@ def response_node(state: AgentState) -> dict:
             "or *\"How do I improve my GitHub?\"*"
         )
         return {"output": rejection}
+
+    # --- FAREWELL ---
+    if decision.get("farewell"):
+        farewell_response = llm.invoke(f"""
+            {MENTOR_PERSONA}
+            The user just said goodbye with: "{user_input}"
+            Respond with a warm, encouraging farewell message (2-3 lines max).
+            Wish them luck with their preparation and let them know you are always here
+            when they need help.
+        """).content
+        new_summary = update_summary(summary, user_input, farewell_response)
+        return {"output": farewell_response, "summary": new_summary}
 
     # --- EMOTIONAL ---
     if decision.get("emotional"):

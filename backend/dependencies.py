@@ -40,36 +40,38 @@ def get_embeddings() -> OpenAIEmbeddings:
 
 @lru_cache
 def get_vectorstore() -> Optional[FAISS]:
-    """Build FAISS vectorstore from resume PDF. Returns None if unavailable."""
-    s = get_settings()
-    pdf_path = s.resume_pdf_path
-
-    if not pdf_path:
-        print("[INFO] No resume configured (RESUME_PDF_PATH not set) -- running without RAG context")
-        return None
-
-    if not os.path.exists(pdf_path):
-        print(f"[WARN] Resume PDF not found at '{pdf_path}' -- running without RAG context")
-        return None
-
+    """Build FAISS vectorstore from resume_text in Supabase. Returns None if unavailable."""
+    from backend.database import db_manager
+    
     try:
-        loader = PyPDFLoader(pdf_path)
-        documents = loader.load()
+        user_data = db_manager.get_user_data()
+        if not user_data or not user_data.get("resume_text"):
+            print("[INFO] No resume_text found in database -- running without RAG context")
+            return None
+            
+        resume_text = user_data["resume_text"]
+        
+        splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+        texts = splitter.split_text(resume_text)
 
-        if not documents:
-            print("[WARN] Resume PDF loaded but contained no pages -- running without RAG context")
+        if not texts:
+            print("[WARN] Resume text is empty after splitting -- running without RAG context")
             return None
 
-        splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-        docs = splitter.split_documents(documents)
-
-        vectorstore = FAISS.from_documents(docs, get_embeddings())
-        print(f"[OK] Vectorstore built from '{pdf_path}' ({len(docs)} chunks)")
+        vectorstore = FAISS.from_texts(texts, get_embeddings())
+        print(f"[OK] Vectorstore built from database resume ({len(texts)} chunks)")
         return vectorstore
 
     except Exception as e:
-        print(f"[WARN] Failed to build vectorstore: {e} -- running without RAG context")
+        print(f"[WARN] Failed to build vectorstore from DB: {e} -- running without RAG context")
         return None
+
+def reload_retriever():
+    """Clear caches to force rebuild of the vectorstore on next fetch."""
+    get_vectorstore.cache_clear()
+    get_retriever.cache_clear()
+    # Pre-warm the cache immediately
+    get_vectorstore()
 
 
 @lru_cache

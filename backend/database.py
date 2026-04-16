@@ -38,32 +38,42 @@ class DatabaseManager:
             # Generate unique filename
             file_ext = filename.split('.')[-1] if '.' in filename else 'pdf'
             unique_filename = f"resume/{uuid.uuid4()}.{file_ext}"
-            
-            # Upload to storage (resumes bucket already exists)
+
+            print(f"[DB] Uploading '{filename}' to Supabase bucket 'resumes' as '{unique_filename}'")
+
+            # Upload to storage with explicit content-type
             storage_response = self.supabase.storage.from_("resumes").upload(
-                unique_filename, file_content
+                path=unique_filename,
+                file=file_content,
+                file_options={"content-type": "application/pdf"},
             )
-            
-            if storage_response:
-                # Extract text from PDF
-                text_content = self._extract_text_from_pdf(file_content)
-                
-                # Update app_config with file path and extracted text
-                update_response = self.supabase.table("app_config").update({
-                    "resume_file_path": unique_filename,
-                    "resume_text": text_content
-                }).eq("id", 1).execute()
-                
-                if len(update_response.data) > 0:
-                    return {
-                        "file_path": unique_filename,
-                        "text_content": text_content
-                    }
-            
+
+            print(f"[DB] Storage upload response: {storage_response}")
+
+            # supabase-py raises an exception on error; if we get here, it succeeded
+            # Extract text from PDF
+            text_content = self._extract_text_from_pdf(file_content)
+            print(f"[DB] Extracted {len(text_content)} chars from PDF")
+
+            # Update app_config row (id=1) with file path and extracted text
+            update_response = self.supabase.table("app_config").update({
+                "resume_file_path": unique_filename,
+                "resume_text": text_content
+            }).eq("id", 1).execute()
+
+            print(f"[DB] app_config update rows affected: {len(update_response.data)}")
+
+            if len(update_response.data) > 0:
+                return {
+                    "file_path": unique_filename,
+                    "text_content": text_content
+                }
+
+            print("[DB] WARNING: Storage uploaded OK but app_config row was not updated (no row with id=1?)")
             return None
         except Exception as e:
-            print(f"Error uploading resume: {e}")
-            return None
+            print(f"[DB] Error uploading resume: {type(e).__name__}: {e}")
+            raise  # re-raise so the endpoint can return a proper HTTP 500
     
     def _extract_text_from_pdf(self, file_content: bytes) -> str:
         """Extract text from PDF bytes using LangChain."""
@@ -107,6 +117,47 @@ class DatabaseManager:
             print(f"Error getting user data: {e}")
             return None
 
+    def get_roles(self) -> list:
+        """Get all roles from the database."""
+        try:
+            response = self.supabase.table("roles").select("id, name, description").execute()
+            if response.data:
+                return response.data
+            return []
+        except Exception as e:
+            print(f"Error getting roles: {e}")
+            return []
+
+    def get_role(self, identifier: str) -> Optional[Dict[str, Any]]:
+        """Get a single role by id or name from the database."""
+        try:
+            # Try matching by id (if uuid) or name
+            import uuid
+            try:
+                val = uuid.UUID(identifier)
+                response = self.supabase.table("roles").select("id, name, description").eq("id", identifier).execute()
+            except ValueError:
+                # Fallback to loose name match 
+                # (in realistic apps, slug might be better, we use ilike for loose match)
+                response = self.supabase.table("roles").select("id, name, description").ilike("name", f"%{identifier}%").execute()
+                
+            if response.data:
+                return response.data[0]
+            return None
+        except Exception as e:
+            print(f"Error getting role {identifier}: {e}")
+            return None
+
+    def get_companies(self) -> list:
+        """Get all companies from the database."""
+        try:
+            response = self.supabase.table("companies").select("name").execute()
+            if response.data:
+                return response.data
+            return []
+        except Exception as e:
+            print(f"Error getting companies: {e}")
+            return []
 
 # Global instance
 db_manager = DatabaseManager()

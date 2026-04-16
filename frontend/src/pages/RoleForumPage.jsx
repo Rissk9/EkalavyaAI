@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const POSTS = [
@@ -31,8 +31,6 @@ const POSTS = [
 ];
 
 const getCommentsForPost = (post, idx) => {
-  // Placeholder comment data (no backend wired yet).
-  // Seed it so each expanded thread looks unique and has enough entries to scroll.
   return Array.from({ length: 14 }).map((_, i) => ({
     id: `${idx}-${i}`,
     author: `@member_${idx + 1}_${i + 1}`,
@@ -50,12 +48,28 @@ export default function RoleForumPage() {
   const { orbitId } = useParams();
   const navigate = useNavigate();
   const [openCommentsIdx, setOpenCommentsIdx] = useState(null);
+  const [roleData, setRoleData] = useState(null);
 
-  const orbitDisplay = orbitId === 'backend' ? 'Backend Engineering'
-    : orbitId === 'frontend' ? 'Frontend Engineering'
-    : orbitId === 'data' ? 'Data Science'
-    : orbitId === 'product' ? 'Product Management'
-    : orbitId;
+  useEffect(() => {
+    const fetchOrbitData = async () => {
+      try {
+        const apiBase = import.meta?.env?.VITE_BACKEND_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiBase}/orbit-data/${orbitId}`);
+        const data = await response.json();
+        
+        if (data.role) {
+          setRoleData(data.role);
+        }
+      } catch (error) {
+        console.error('Error fetching orbit data:', error);
+      }
+    };
+    
+    fetchOrbitData();
+  }, [orbitId]);
+
+  const orbitName = orbitId ? orbitId.charAt(0).toUpperCase() + orbitId.slice(1) : 'Orbit';
+  const orbitDisplay = roleData?.name ? roleData.name : orbitName;
 
   return (
     <motion.div
@@ -110,7 +124,7 @@ export default function RoleForumPage() {
             <header className="flex items-end justify-start mb-12">
               <div>
                 <h1 className="text-4xl font-headline font-bold tracking-tight mb-2">SIGNAL FEED</h1>
-                <p className="text-on-surface-variant/60 font-body text-sm">Monitoring real-time telemetry from the {orbitId} engineering void.</p>
+                <p className="text-on-surface-variant/60 font-body text-sm">Monitoring real-time telemetry from the {orbitDisplay} engineering void.</p>
               </div>
             </header>
 

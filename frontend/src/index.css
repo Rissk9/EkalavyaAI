@@ -125,3 +125,67 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #4d4732;
 }
+
+/* Celestial Loading Animations */
+@keyframes celestial-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; filter: blur(2px); }
+  50% { transform: scale(1.5); opacity: 0.1; filter: blur(6px); }
+}
+
+@keyframes signal-orbit {
+  from { transform: rotate(0deg) translateX(25px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(25px) rotate(-360deg); }
+}
+
+@keyframes transmission-wave {
+  0% { transform: scale(0.6); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.celestial-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 60px;
+  height: 40px;
+}
+
+.loader-sun {
+  width: 8px;
+  height: 8px;
+  background: #FFD700;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #FFD700;
+  position: relative;
+  z-index: 2;
+}
+
+.loader-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #FFD700;
+  border-radius: 50%;
+  animation: transmission-wave 2s infinite;
+}
+
+.loader-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #FFD700;
+  border-radius: 50%;
+  animation: signal-orbit 1.5s linear infinite;
+}
+
+.loader-particle:nth-child(2) {
+  animation-duration: 2s;
+  animation-delay: -0.5s;
+}
+
+.loader-particle:nth-child(3) {
+  animation-duration: 2.5s;
+  animation-delay: -1s;
+}

@@ -5,7 +5,8 @@ Run with: uvicorn backend.main:app --reload
 from contextlib import asynccontextmanager
 from typing import Optional
 
-from fastapi import FastAPI, File, UploadFile, HTTPException
+import asyncio
+from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -37,24 +38,19 @@ app = FastAPI(
 )
 
 settings = get_settings()
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["http://localhost:5173", "http://localhost:3000"],  # frontend origins
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "http://127.0.0.1:5173"
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # ---------------------------------------------------------------------------
@@ -92,6 +88,7 @@ class UploadResponse(BaseModel):
     success: bool
     message: str
     file_path: Optional[str] = None
+    ats_data: Optional[dict] = None
 
 
 # ---------------------------------------------------------------------------
@@ -103,7 +100,7 @@ def health():
 
 
 @app.post("/chat", response_model=ChatResponse)
-def chat(req: ChatRequest):
+async def chat(req: ChatRequest, request: Request):
     if not (req.message or "").strip():
         # If the client didn't send a message, return a friendly prompt instead
         # of letting downstream nodes operate on an empty input.
@@ -125,12 +122,23 @@ def chat(req: ChatRequest):
     if req.leetcode_username:
         state_input["leetcode_username"] = req.leetcode_username
 
-    result = graph.invoke(state_input)
+    graph_task = asyncio.create_task(graph.ainvoke(state_input))
+    
+    while not graph_task.done():
+        if await request.is_disconnected():
+            print("[INFO] Client disconnected from /chat - cancelling execution.")
+            graph_task.cancel()
+            break
+        await asyncio.sleep(0.5)
 
-    return ChatResponse(
-        output=result["output"],
-        summary=result.get("summary", req.summary),
-    )
+    try:
+        result = await graph_task
+        return ChatResponse(
+            output=result["output"],
+            summary=result.get("summary", req.summary),
+        )
+    except asyncio.CancelledError:
+        return ChatResponse(output="Request aborted.", summary=req.summary)
 
 
 @app.post("/update-usernames")
@@ -149,36 +157,67 @@ def update_usernames(req: UsernamesRequest):
 @app.post("/upload-resume", response_model=UploadResponse)
 def upload_resume(file: UploadFile = File(...)):
     """Upload resume PDF to Supabase Storage and extract text."""
+    # Validate file type
+    if not file.filename or not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+
     try:
-        # Validate file type
-        if not file.filename or not file.filename.lower().endswith('.pdf'):
-            return UploadResponse(
-                success=False,
-                message="Only PDF files are allowed"
-            )
-        
         # Read file content
         file_content = file.file.read()
-        
+        if not file_content:
+            raise HTTPException(status_code=400, detail="Uploaded file is empty")
+
+        print(f"[upload-resume] Received '{file.filename}', size={len(file_content)} bytes")
+
         # Upload and extract text
         result = db_manager.upload_resume(file_content, file.filename)
-        
+
         if result:
+            print(f"[upload-resume] Success — stored at {result['file_path']}")
+            
+            # Form ATS score
+            ats_data = None
+            try:
+                from backend.advancedats import AdvancedATSScorer
+                scorer = AdvancedATSScorer()
+                ats_result = scorer.score(resume_text=result["text_content"])
+                ats_data = {
+                    "component_breakdown": {
+                        "total_score": ats_result.total_score,
+                        "skill_match": ats_result.skill_match_score,
+                        "experience_quality": ats_result.experience_score,
+                        "project_quality": ats_result.project_quality_score,
+                        "resume_structure": ats_result.structure_score,
+                        "job_relevance": ats_result.relevance_score
+                    },
+                    "matched_skills": ats_result.matched_skills,
+                    "missing_critical_skills": ats_result.missing_critical_skills,
+                    "gaps_identified": ats_result.gaps,
+                    "recommendations": ats_result.recommendations
+                }
+            except Exception as e:
+                print(f"[upload-resume] Could not calculate ATS score: {e}")
+
+            # Reload RAG vectorstore so the AI has the latest resume context instantly
+            from backend.dependencies import reload_retriever
+            reload_retriever()
+            
             return UploadResponse(
                 success=True,
                 message="Resume uploaded and processed successfully",
-                file_path=result["file_path"]
+                file_path=result["file_path"],
+                ats_data=ats_data
             )
         else:
-            return UploadResponse(
-                success=False,
-                message="Failed to upload or process resume"
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to upload resume to storage. Check Supabase bucket policies and credentials."
             )
+    except HTTPException:
+        raise  # re-raise HTTP exceptions as-is
     except Exception as e:
-        return UploadResponse(
-            success=False,
-            message=f"Error uploading resume: {str(e)}"
-        )
+        print(f"[upload-resume] Unhandled error: {e}")
+        raise HTTPException(status_code=500, detail=f"Error uploading resume: {str(e)}")
 
 
 @app.get("/user-data", response_model=UserDataResponse)
@@ -190,6 +229,30 @@ def get_user_data():
             return UserDataResponse(**data)
         else:
             return UserDataResponse()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/roles")
+def get_roles():
+    """Get all roles from the database."""
+    try:
+        roles = db_manager.get_roles()
+        return {"roles": roles}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/orbit-data/{identifier}")
+def get_orbit_data(identifier: str):
+    """Get specific role information and dynamic company rings."""
+    try:
+        role_data = db_manager.get_role(identifier)
+        companies_data = db_manager.get_companies()
+        return {
+            "role": role_data if role_data else {"name": identifier.capitalize(), "description": ""},
+            "companies": companies_data
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

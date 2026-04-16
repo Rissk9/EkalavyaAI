@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#221b00",
+                      "inverse-primary": "#705d00",
+                      "tertiary-container": "#f6d865",
+                      "surface": "#141120",
+                      "surface-container-highest": "#363343",
+                      "on-primary-container": "#705e00",
+                      "primary-fixed-dim": "#e9c400",
+                      "primary-fixed": "#ffe16d",
+                      "surface-container-low": "#1c1a29",
+                      "on-surface-variant": "#d0c6ab",
+                      "outline-variant": "#4d4732",
+                      "error": "#ffb4ab",
+                      "surface-container-high": "#2b2838",
+                      "inverse-surface": "#e6dff5",
+                      "surface-dim": "#141120",
+                      "on-primary": "#3a3000",
+                      "on-tertiary": "#3a3000",
+                      "on-secondary": "#36301d",
+                      "surface-tint": "#e9c400",
+                      "outline": "#999077",
+                      "secondary-fixed": "#ede2c6",
+                      "on-tertiary-fixed-variant": "#544600",
+                      "on-secondary-container": "#c1b89d",
+                      "surface-container-lowest": "#0f0c1b",
+                      "tertiary-fixed": "#ffe16e",
+                      "surface-variant": "#363343",
+                      "primary": "#fff6df",
+                      "on-error-container": "#ffdad6",
+                      "surface-container": "#201e2d",
+                      "secondary-fixed-dim": "#d0c6ab",
+                      "surface-bright": "#3a3747",
+                      "on-surface": "#e6dff5",
+                      "background": "#141120",
+                      "on-error": "#690005",
+                      "on-background": "#e6dff5",
+                      "inverse-on-surface": "#312e3e",
+                      "secondary": "#d0c6ab",
+                      "on-primary-fixed-variant": "#544600",
+                      "on-secondary-fixed": "#201b0a",
+                      "tertiary-fixed-dim": "#e1c554",
+                      "on-secondary-fixed-variant": "#4d4632",
+                      "on-tertiary-container": "#705d00",
+                      "error-container": "#93000a",
+                      "on-primary-fixed": "#221b00",
+                      "tertiary": "#fff5de",
+                      "secondary-container": "#4f4934",
+                      "primary-container": "#ffd700"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Space Grotesk"],
+                      "body": ["Inter"],
+                      "label": ["Space Grotesk"]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #02010A;
+            background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .solar-gradient {
+            background: linear-gradient(135deg, #FFD700 0%, #FFB77A 100%);
+        }
+        .glass-panel {
+            background: rgba(10, 8, 28, 0.85);
+            backdrop-filter: blur(20px);
+        }
+        .ghost-border {
+            outline: 1px solid rgba(77, 71, 50, 0.15);
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface selection:bg-primary-container selection:text-on-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 h-[80px] flex justify-between items-center px-8 bg-[#02010A]/85 backdrop-blur-xl shadow-[0_0_20px_rgba(255,215,0,0.04)]">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 solar-gradient rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[#3a3000] text-sm" style="font-variation-settings: 'FILL' 1;">deployed_code</span>
+</div>
+<span class="text-2xl font-bold tracking-tighter text-[#FFD700] font-headline">EKALAVYA</span>
+</div>
+<div class="hidden md:flex items-center gap-2 font-label text-[10px] tracking-[0.2em] text-[#E6DFF5]/40 uppercase">
+<span>HOME</span>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="text-[#FFD700]">BACKEND ENGINEERING</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="text-[#E6DFF5]/60 hover:text-[#FFD700] transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-[#E6DFF5]/60 hover:text-[#FFD700] transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<img alt="User avatar" class="w-10 h-10 rounded-lg ghost-border bg-surface-container-high" data-alt="Stylized portrait of a young male professional in a modern dark tech setting with soft rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAN3A-7N593fNiVzTmB4K739Yx1vSVXVIMSXRO4WWhIKTXqKaZ06NmpYVlQq2phFeEIp-F7eTl_NwnSZMxUEnXGy6AzpoJ9iJICUFYC_GTdUMfQHfGAV5Ykj90zDyiWvW8Bhi3ZzQZ8XUsOlTj5zMHxsuyynAuPV0YMqRCiRzUgykh2PHrI69JSu3EpzxP_e1dnInwxTvLB3-wH8mHteoT1Ym6YKWmN7TGRSE39n0mzf8JI8sH8_FI0MiMCedS-FjRJuUJQz3lKg"/>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-8 max-w-7xl mx-auto">
+<!-- Header Section -->
+<header class="mb-20 text-center md:text-left">
+<span class="font-label text-xs tracking-[0.3em] text-[#FFD700] uppercase block mb-4">ORBIT</span>
+<h1 class="font-headline text-5xl md:text-7xl font-bold tracking-tight text-on-surface mb-6">Backend Engineering</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">Select a company ring to explore their community, architecture patterns, and engineering culture within the celestial ecosystem.</p>
+</header>
+<!-- Company Rings Section -->
+<section class="mb-24">
+<div class="flex items-center justify-between mb-10">
+<h2 class="font-label text-xs tracking-[0.3em] text-[#E6DFF5]/60 uppercase">COMPANY RINGS</h2>
+<div class="h-px flex-grow mx-8 bg-outline-variant/20"></div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+<!-- Microsoft -->
+<div class="group h-[180px] w-full bg-[#1C1A29] rounded-lg p-6 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-4px] hover:bg-[#2B2838] cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#FFD700]" style="font-variation-settings: 'FILL' 1;">potted_plant</span>
+<span class="material-symbols-outlined text-[#FFD700] opacity-0 group-hover:opacity-100 transition-opacity">arrow_outward</span>
+</div>
+<div>
+<p class="font-headline text-lg font-bold text-on-surface">Microsoft</p>
+<p class="font-label text-[10px] tracking-widest text-[#E6DFF5]/40 uppercase">RING</p>
+</div>
+</div>
+<!-- Google -->
+<div class="group h-[180px] w-full bg-[#1C1A29] rounded-lg p-6 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-4px] hover:bg-[#2B2838] cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#FFD700]" style="font-variation-settings: 'FILL' 1;">adjust</span>
+<span class="material-symbols-outlined text-[#FFD700] opacity-0 group-hover:opacity-100 transition-opacity">arrow_outward</span>
+</div>
+<div>
+<p class="font-headline text-lg font-bold text-on-surface">Google</p>
+<p class="font-label text-[10px] tracking-widest text-[#E6DFF5]/40 uppercase">RING</p>
+</div>
+</div>
+<!-- Razorpay -->
+<div class="group h-[180px] w-full bg-[#1C1A29] rounded-lg p-6 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-4px] hover:bg-[#2B2838] cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#FFD700]" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="material-symbols-outlined text-[#FFD700] opacity-0 group-hover:opacity-100 transition-opacity">arrow_outward</span>
+</div>
+<div>
+<p class="font-headline text-lg font-bold text-on-surface">Razorpay</p>
+<p class="font-label text-[10px] tracking-widest text-[#E6DFF5]/40 uppercase">RING</p>
+</div>
+</div>
+<!-- Flipkart -->
+<div class="group h-[180px] w-full bg-[#1C1A29] rounded-lg p-6 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-4px] hover:bg-[#2B2838] cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#FFD700]" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="material-symbols-outlined text-[#FFD700] opacity-0 group-hover:opacity-100 transition-opacity">arrow_outward</span>
+</div>
+<div>
+<p class="font-headline text-lg font-bold text-on-surface">Flipkart</p>
+<p class="font-label text-[10px] tracking-widest text-[#E6DFF5]/40 uppercase">RING</p>
+</div>
+</div>
+<!-- Amazon -->
+<div class="group h-[180px] w-full bg-[#1C1A29] rounded-lg p-6 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-4px] hover:bg-[#2B2838] cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#FFD700]" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+<span class="material-symbols-outlined text-[#FFD700] opacity-0 group-hover:opacity-100 transition-opacity">arrow_outward</span>
+</div>
+<div>
+<p class="font-headline text-lg font-bold text-on-surface">Amazon</p>
+<p class="font-label text-[10px] tracking-widest text-[#E6DFF5]/40 uppercase">RING</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Feature Modules Section -->
+<div class="grid md:grid-cols-2 gap-8">
+<!-- Forum Card -->
+<div class="relative overflow-hidden group rounded-xl bg-surface-container-low p-10 flex flex-col justify-between min-h-[360px] ghost-border transition-all duration-500 hover:bg-surface-container">
+<div class="absolute -right-16 -top-16 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
+<span class="material-symbols-outlined text-[240px]" style="font-variation-settings: 'opsz' 48;">auto_awesome_mosaic</span>
+</div>
+<div class="relative z-10">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center mb-8">
+<span class="material-symbols-outlined text-[#FFD700]">all_inclusive</span>
+</div>
+<h3 class="font-headline text-3xl font-bold mb-4">Backend Engineering Forum</h3>
+<p class="text-on-surface-variant leading-relaxed max-w-sm">Join the constellation of architects. Share patterns, debug complex microservices, and evolve the collective knowledge.</p>
+</div>
+<div class="relative z-10 mt-12">
+<button class="solar-gradient text-[#3a3000] font-headline font-bold py-4 px-8 rounded-lg tracking-tight hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all active:scale-95">
+                        OPEN FORUM
+                    </button>
+</div>
+</div>
+<!-- AI Mentor Card -->
+<div class="relative overflow-hidden group rounded-xl bg-surface-container-low p-10 flex flex-col justify-between min-h-[360px] ghost-border transition-all duration-500 hover:bg-surface-container">
+<div class="absolute -right-16 -top-16 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
+<span class="material-symbols-outlined text-[240px]" style="font-variation-settings: 'opsz' 48;">wb_sunny</span>
+</div>
+<div class="relative z-10">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center mb-8">
+<span class="material-symbols-outlined text-[#FFD700]">psychology</span>
+</div>
+<h3 class="font-headline text-3xl font-bold mb-4">AI Mentor — Backend Mode</h3>
+<p class="text-on-surface-variant leading-relaxed max-w-sm">Accelerate your trajectory with our synthetic intelligence. Real-time code reviews, system design audits, and growth mapping.</p>
+</div>
+<div class="relative z-10 mt-12">
+<button class="glass-panel ghost-border text-[#FFD700] font-headline font-bold py-4 px-8 rounded-lg tracking-tight hover:bg-surface-container-highest transition-all active:scale-95">
+                        OPEN AI DASHBOARD
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 bg-[#02010A] mt-auto border-t border-outline-variant/5">
+<div class="max-w-7xl mx-auto px-8 flex flex-col items-center gap-8">
+<div class="flex items-center gap-8 font-label text-[10px] tracking-[0.2em] text-[#E6DFF5]/30 uppercase">
+<a class="hover:text-[#FFD700] transition-colors" href="#">Protocol</a>
+<a class="hover:text-[#FFD700] transition-colors" href="#">Void Status</a>
+<a class="hover:text-[#FFD700] transition-colors" href="#">Directives</a>
+</div>
+<div class="text-[#FFD700] font-headline font-bold text-sm tracking-tighter">ORBIT BACKEND</div>
+<p class="font-label text-[9px] tracking-[0.3em] text-[#E6DFF5]/20 uppercase">© 2024 ORBIT BACKEND SYSTEMS. ALL RADIANCE RESERVED.</p>
+</div>
+</footer>
+<!-- Side Navigation (Mobile Hidden) -->
+<aside class="hidden xl:flex flex-col py-6 px-4 gap-8 h-screen w-20 fixed left-0 top-0 bg-[#02010A] border-r border-outline-variant/5 z-40">
+<div class="flex flex-col items-center gap-12 mt-20">
+<div class="flex flex-col items-center gap-6">
+<button class="w-10 h-10 rounded-lg bg-surface-container-highest text-[#FFD700] flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+</button>
+<button class="w-10 h-10 rounded-lg text-[#E6DFF5]/40 hover:bg-[#2B2838] hover:text-[#E6DFF5] flex items-center justify-center transition-all">
+<span class="material-symbols-outlined">adjust</span>
+</button>
+<button class="w-10 h-10 rounded-lg text-[#E6DFF5]/40 hover:bg-[#2B2838] hover:text-[#E6DFF5] flex items-center justify-center transition-all">
+<span class="material-symbols-outlined">forum</span>
+</button>
+<button class="w-10 h-10 rounded-lg text-[#E6DFF5]/40 hover:bg-[#2B2838] hover:text-[#E6DFF5] flex items-center justify-center transition-all">
+<span class="material-symbols-outlined">psychology</span>
+</button>
+</div>
+</div>
+</aside>
+</body></html>

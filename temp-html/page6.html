@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VOID // FORUM - Microsoft Ring</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#fff5de",
+                    "tertiary-container": "#f6d865",
+                    "surface-container": "#201e2d",
+                    "on-primary-container": "#705e00",
+                    "tertiary-fixed-dim": "#e1c554",
+                    "on-tertiary-fixed": "#221b00",
+                    "error-container": "#93000a",
+                    "tertiary-fixed": "#ffe16e",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "on-secondary": "#36301d",
+                    "on-primary-fixed": "#221b00",
+                    "inverse-on-surface": "#312e3e",
+                    "on-error-container": "#ffdad6",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#363343",
+                    "on-surface-variant": "#d0c6ab",
+                    "outline": "#999077",
+                    "surface-container-highest": "#363343",
+                    "on-primary": "#3a3000",
+                    "background": "#141120",
+                    "on-secondary-fixed": "#201b0a",
+                    "primary": "#fff6df",
+                    "surface-container-lowest": "#0f0c1b",
+                    "secondary-fixed-dim": "#d0c6ab",
+                    "on-primary-fixed-variant": "#544600",
+                    "on-surface": "#e6dff5",
+                    "surface-bright": "#3a3747",
+                    "primary-fixed": "#ffe16d",
+                    "on-secondary-container": "#c1b89d",
+                    "outline-variant": "#4d4732",
+                    "secondary": "#d0c6ab",
+                    "on-tertiary": "#3a3000",
+                    "surface-tint": "#e9c400",
+                    "inverse-primary": "#705d00",
+                    "secondary-fixed": "#ede2c6",
+                    "on-error": "#690005",
+                    "surface": "#141120",
+                    "surface-container-high": "#2b2838",
+                    "primary-fixed-dim": "#e9c400",
+                    "on-background": "#e6dff5",
+                    "secondary-container": "#4f4934",
+                    "surface-container-low": "#1c1a29",
+                    "primary-container": "#ffd700",
+                    "inverse-surface": "#e6dff5",
+                    "surface-dim": "#141120",
+                    "on-tertiary-container": "#705d00",
+                    "on-secondary-fixed-variant": "#4d4632"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #02010A;
+            color: #e6dff5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .particle-field {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .solar-gradient {
+            background: linear-gradient(to right, #FFD700, #FFB77A);
+        }
+        .glass-void {
+            background: rgba(10, 8, 28, 0.85);
+            backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-[#02010A] selection:bg-primary-container selection:text-on-primary">
+<div class="particle-field"></div>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full h-20 px-8 flex items-center justify-between z-[100] bg-[#02010a]/85 backdrop-blur-xl">
+<div class="flex items-center gap-8">
+<div class="w-[120px] h-8 border border-[#FFD700] rounded flex items-center justify-center">
+<span class="font-headline font-bold text-[#FFD700] tracking-tighter text-sm">EKALAVYA</span>
+</div>
+<nav class="hidden md:flex items-center gap-2 font-headline text-[10px] uppercase tracking-[0.2em]">
+<span class="text-[#E6DFF5]/40 hover:text-[#FFD700] transition-colors cursor-pointer">HOME</span>
+<span class="text-[#E6DFF5]/20 font-light">›</span>
+<span class="text-[#E6DFF5]/40 hover:text-[#FFD700] transition-colors cursor-pointer">BACKEND ENGINEERING</span>
+<span class="text-[#E6DFF5]/20 font-light">›</span>
+<span class="text-[#FFD700]">MICROSOFT RING</span>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-[#E6DFF5]/60">
+<span class="material-symbols-outlined hover:text-[#FFD700] transition-all cursor-pointer">notifications</span>
+<span class="material-symbols-outlined hover:text-[#FFD700] transition-all cursor-pointer">settings</span>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-[#FFD700]/30 overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="Stylized portrait of a software engineer with glasses and a thoughtful expression, high-contrast digital art style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv1USHStKiD49YnQQsD8jGnP3kJzCQMh4UN61DwaUCRg6GFTFduyi__Kc3-YzIEBpClYIYWIAnT8LzkuFcykUNeTp8PQDMunP3_FWZPaovM904G_gS_4-nhWMzZWctmdg7pjRgWnPY0e3LJTCbKE0KBT0AB69heYkLUcN2fJ7DKigAiCMJtrLaT6IZVJfvZcyf5pYgF4qgC1arQkbGzwr3HS__bF1YGSkrgsjaJkg1CRk6dBL70M75humdlsLXmJYP6sg1Dx7C_A"/>
+</div>
+</div>
+</header>
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-0 h-full w-[260px] pt-28 pb-8 px-6 flex flex-col z-50 bg-[#02010a]/90 backdrop-blur-md">
+<div class="mb-10 px-2">
+<p class="font-headline text-[10px] tracking-[0.2em] text-[#E6DFF5]/40 uppercase mb-1">Backend Engineering</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#FFD700] text-xl" data-icon="hub">hub</span>
+<h2 class="font-headline font-bold text-lg text-[#FFD700] tracking-tight">Microsoft Ring</h2>
+</div>
+</div>
+<nav class="flex-grow space-y-1">
+<p class="px-2 font-headline text-[9px] tracking-[0.2em] text-[#E6DFF5]/20 uppercase mb-4">Frequency Bands</p>
+<a class="flex items-center gap-3 px-4 py-3 bg-[#363343] text-[#FFD700] rounded-lg group transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings_input_antenna">settings_input_antenna</span>
+<span class="font-headline text-[11px] tracking-widest uppercase font-medium">All Transmissions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#E6DFF5]/40 hover:bg-[#141120] hover:text-[#E6DFF5] rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="sensors">sensors</span>
+<span class="font-headline text-[11px] tracking-widest uppercase">Interview Signals</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#E6DFF5]/40 hover:bg-[#141120] hover:text-[#E6DFF5] rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="hub">hub</span>
+<span class="font-headline text-[11px] tracking-widest uppercase">Internal Transmissions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#E6DFF5]/40 hover:bg-[#141120] hover:text-[#E6DFF5] rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-headline text-[11px] tracking-widest uppercase">Offer &amp; Joins</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#E6DFF5]/40 hover:bg-[#141120] hover:text-[#E6DFF5] rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="emergency">emergency</span>
+<span class="font-headline text-[11px] tracking-widest uppercase">Distress Beacons</span>
+</a>
+</nav>
+<div class="mt-auto">
+<button class="w-full py-4 px-4 glass-void border border-[#FFD700]/20 text-[#FFD700] rounded-lg font-headline text-[10px] tracking-widest uppercase flex items-center justify-between hover:bg-[#FFD700] hover:text-[#0a081c] transition-all group">
+                GO TO AI MENTOR
+                <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-[260px] pt-32 px-12 pb-20 max-w-6xl">
+<!-- Feed Header -->
+<header class="mb-12 flex items-end justify-between">
+<div class="space-y-1">
+<p class="font-headline text-[10px] tracking-[0.3em] text-[#FFD700] uppercase font-bold">MICROSOFT RING</p>
+<h1 class="font-headline text-5xl font-black text-[#E6DFF5] tracking-tighter">Backend Engineering</h1>
+</div>
+<button class="solar-gradient text-[#3a3000] px-8 py-3 rounded-lg font-headline font-bold text-xs tracking-widest uppercase shadow-[0_0_20px_rgba(255,215,0,0.1)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">send</span>
+                Transmit Signal
+            </button>
+</header>
+<!-- Filters/Sort -->
+<div class="flex gap-4 mb-10 overflow-x-auto pb-4 scrollbar-hide">
+<button class="px-6 py-2 bg-[#363343] text-[#FFD700] rounded-full text-[10px] font-headline tracking-widest font-bold border border-[#FFD700]/10">TRENDING</button>
+<button class="px-6 py-2 bg-transparent text-[#E6DFF5]/40 hover:text-[#E6DFF5] rounded-full text-[10px] font-headline tracking-widest hover:bg-[#141120] transition-all">NEWEST</button>
+<button class="px-6 py-2 bg-transparent text-[#E6DFF5]/40 hover:text-[#E6DFF5] rounded-full text-[10px] font-headline tracking-widest hover:bg-[#141120] transition-all">MOST AMPLIFIED</button>
+<button class="px-6 py-2 bg-transparent text-[#E6DFF5]/40 hover:text-[#E6DFF5] rounded-full text-[10px] font-headline tracking-widest hover:bg-[#141120] transition-all">UNANSWERED</button>
+</div>
+<!-- Post Grid -->
+<div class="grid grid-cols-1 gap-6">
+<!-- Post Card 1 -->
+<article class="bg-[#1C1A29] p-8 rounded-2xl hover:bg-[#2B2838] transition-all group relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-[#FFD700]/5 blur-3xl rounded-full translate-x-16 -translate-y-16"></div>
+<div class="flex items-start gap-6">
+<div class="flex flex-col items-center gap-2 pt-1">
+<button class="flex flex-col items-center text-[#E6DFF5]/40 hover:text-[#FFD700] transition-colors">
+<span class="material-symbols-outlined">expand_less</span>
+<span class="font-headline font-bold text-xs">201</span>
+</button>
+<span class="text-[9px] font-headline tracking-widest text-[#E6DFF5]/20 uppercase">Amplify</span>
+</div>
+<div class="flex-grow">
+<div class="flex items-center gap-3 mb-3">
+<div class="px-3 py-1 bg-[#4D4732]/20 border border-[#4D4732]/40 rounded-md">
+<span class="font-headline text-[9px] text-[#FFD700] tracking-widest uppercase">Interview Signals</span>
+</div>
+<span class="text-[#E6DFF5]/20 text-xs">•</span>
+<span class="text-[#E6DFF5]/40 text-xs font-medium">@vikram_m</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-[#E6DFF5] group-hover:text-white transition-colors mb-4 leading-tight">Microsoft SDE-2 Backend — Behavioural round questions</h3>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+                                34 Echo
+                            </div>
+<div class="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                                2h ago
+                            </div>
+<div class="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                                1.2k views
+                            </div>
+</div>
+</div>
+</div>
+</article>
+<!-- Post Card 2 -->
+<article class="bg-[#1C1A29] p-8 rounded-2xl hover:bg-[#2B2838] transition-all group relative overflow-hidden">
+<div class="flex items-start gap-6">
+<div class="flex flex-col items-center gap-2 pt-1">
+<button class="flex flex-col items-center text-[#E6DFF5]/40 hover:text-[#FFD700] transition-colors">
+<span class="material-symbols-outlined">expand_less</span>
+<span class="font-headline font-bold text-xs">315</span>
+</button>
+<span class="text-[9px] font-headline tracking-widest text-[#E6DFF5]/20 uppercase">Amplify</span>
+</div>
+<div class="flex-grow">
+<div class="flex items-center gap-3 mb-3">
+<div class="px-3 py-1 bg-[#4D4732]/20 border border-[#4D4732]/40 rounded-md">
+<span class="font-headline text-[9px] text-[#FFD700] tracking-widest uppercase">Internal Transmissions</span>
+</div>
+<span class="text-[#E6DFF5]/20 text-xs">•</span>
+<span class="text-[#E6DFF5]/40 text-xs font-medium">@priya_msft</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-[#E6DFF5] group-hover:text-white transition-colors mb-4 leading-tight">Microsoft Backend team culture</h3>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+                                58 Echo
+                            </div>
+<div class="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                                5h ago
+                            </div>
+<div class="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                                2.4k views
+                            </div>
+</div>
+</div>
+</div>
+</article>
+<!-- Post Card 3 -->
+<article class="bg-[#1C1A29] p-8 rounded-2xl hover:bg-[#2B2838] transition-all group relative overflow-hidden">
+<div class="absolute bottom-0 right-0 w-48 h-48 bg-[#FFD700]/5 blur-3xl rounded-full translate-x-24 translate-y-24"></div>
+<div class="flex items-start gap-6">
+<div class="flex flex-col items-center gap-2 pt-1">
+<button class="flex flex-col items-center text-[#FFD700] transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 600;">expand_less</span>
+<span class="font-headline font-bold text-xs">489</span>
+</button>
+<span class="text-[9px] font-headline tracking-widest text-[#E6DFF5]/20 uppercase">Amplify</span>
+</div>
+<div class="flex-grow">
+<div class="flex items-center gap-3 mb-3">
+<div class="px-3 py-1 bg-[#4D4732]/20 border border-[#4D4732]/40 rounded-md">
+<span class="font-headline text-[9px] text-[#FFD700] tracking-widest uppercase">Offer &amp; Joins</span>
+</div>
+<span class="text-[#E6DFF5]/20 text-xs">•</span>
+<span class="text-[#E6DFF5]/40 text-xs font-medium">@ankit_got_in</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-[#E6DFF5] group-hover:text-white transition-colors mb-4 leading-tight">Got the Microsoft SDE-2 offer — prep timeline</h3>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+                                92 Echo
+                            </div>
+<div class="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                                8h ago
+                            </div>
+<div class="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                                4.1k views
+                            </div>
+</div>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- Floating UI Decoration -->
+<div class="fixed bottom-12 right-12 flex flex-col gap-4 z-50">
+<button class="w-14 h-14 bg-[#1C1A29] rounded-full flex items-center justify-center border border-[#4D4732]/30 shadow-2xl text-[#FFD700] hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">bolt</span>
+</button>
+</div>
+<!-- Background Decorative Element -->
+<div class="fixed top-0 right-0 w-[800px] h-[800px] bg-[#FFD700]/2 rounded-full blur-[160px] -z-10 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+<div class="fixed bottom-0 left-0 w-[600px] h-[600px] bg-primary-container/2 rounded-full blur-[140px] -z-10 translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+</body></html>

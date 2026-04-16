@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Observer | Backend Engineering Forum</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#544600",
+                    "tertiary-fixed-dim": "#e1c554",
+                    "surface-variant": "#363343",
+                    "surface-tint": "#e9c400",
+                    "on-primary": "#3a3000",
+                    "on-secondary-container": "#c1b89d",
+                    "error": "#ffb4ab",
+                    "on-secondary-fixed": "#201b0a",
+                    "tertiary": "#fff5de",
+                    "surface-bright": "#3a3747",
+                    "secondary": "#d0c6ab",
+                    "on-error": "#690005",
+                    "background": "#02010A",
+                    "surface-container-lowest": "#0f0c1b",
+                    "on-secondary-fixed-variant": "#4d4632",
+                    "outline": "#999077",
+                    "on-tertiary": "#3a3000",
+                    "surface-container-highest": "#363343",
+                    "surface-dim": "#141120",
+                    "primary-fixed-dim": "#e9c400",
+                    "primary": "#fff6df",
+                    "inverse-on-surface": "#312e3e",
+                    "primary-container": "#ffd700",
+                    "surface-container-high": "#2b2838",
+                    "on-background": "#e6dff5",
+                    "inverse-surface": "#e6dff5",
+                    "on-surface": "#e6dff5",
+                    "on-primary-container": "#705e00",
+                    "tertiary-fixed": "#ffe16e",
+                    "outline-variant": "#4d4732",
+                    "secondary-fixed-dim": "#d0c6ab",
+                    "primary-fixed": "#ffe16d",
+                    "error-container": "#93000a",
+                    "on-primary-fixed": "#221b00",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "on-tertiary-container": "#705d00",
+                    "surface-container": "#201e2d",
+                    "surface": "#141120",
+                    "on-tertiary-fixed": "#221b00",
+                    "on-secondary": "#36301d",
+                    "secondary-container": "#4f4934",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-container": "#f6d865",
+                    "inverse-primary": "#705d00",
+                    "on-surface-variant": "#d0c6ab",
+                    "surface-container-low": "#1c1a29",
+                    "secondary-fixed": "#ede2c6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #02010A;
+            background-image: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.03) 0%, transparent 80%);
+            font-family: 'Inter', sans-serif;
+        }
+        .space-grotesk { font-family: 'Space Grotesk', sans-serif; }
+        .solar-gradient { background: linear-gradient(135deg, #FFD700 0%, #FFB77A 100%); }
+        .glass-panel { background: rgba(10, 8, 28, 0.85); backdrop-filter: blur(20px); }
+        .ghost-border { outline: 1px solid rgba(77, 71, 50, 0.15); }
+        .glow-hover:hover { box-shadow: 0 0 40px -10px rgba(255, 225, 109, 0.15); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="text-on-surface overflow-hidden">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 right-0 left-0 h-16 z-50 bg-[#02010A]/85 backdrop-blur-md flex items-center justify-between px-8">
+<div class="flex items-center gap-8">
+<!-- Brand Logo Placeholder -->
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 border-2 border-primary-container rounded flex items-center justify-center">
+<div class="w-4 h-4 border border-primary-container rotate-45"></div>
+</div>
+<span class="text-xl font-bold tracking-tighter text-primary-container space-grotesk">CELESTIAL_VOID</span>
+</div>
+<!-- Breadcrumbs -->
+<div class="hidden md:flex items-center gap-2 text-[10px] space-grotesk uppercase tracking-widest opacity-40">
+<span>HOME</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span>BACKEND ENGINEERING</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-primary-container opacity-100">FORUM</span>
+</div>
+</div>
+<div class="flex items-center gap-10">
+<div class="hidden lg:flex items-center gap-8 text-xs space-grotesk uppercase tracking-widest font-medium">
+<a class="text-primary-container border-b border-primary-container pb-1" href="#">HOME</a>
+<a class="opacity-70 hover:opacity-100 transition-opacity" href="#">GALAXY</a>
+<a class="opacity-70 hover:opacity-100 transition-opacity" href="#">MENTOR</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined opacity-70 hover:text-primary-container transition-colors">notifications</button>
+<div class="relative">
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden shadow-[0_0_15px_rgba(255,215,0,0.3)]">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="close-up portrait of a digital avatar with golden circuitry patterns on skin, dark background, cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBm6GoUgfOsaQHcLQdhp9Qva2_b97iH-roVjAR2gQWXjWieAEo7xItLw5x-iSo8qFMpgNe_gd-DJSSGVQdzdsbmdGheR3x8ZYH9tWovUC55XDtYgsWsb50SHqLO2n6o5NbUgJIlX8u3q2edrEjSx1IsJbG8sDzLRW55NXY8ZRQNKzioCgb5GOUsOi9IwneLnXhjb3w5BEYteJUdiaLm7GhqHB8utO4fFjfr4y5o4Joxu4mRjdKNy4VxXOKeHGgUtMtbwJ0Mf74IHg"/>
+</div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#02010A] rounded-full"></div>
+</div>
+</div>
+</div>
+</nav>
+<div class="flex h-screen pt-16">
+<!-- Sidebar Navigation -->
+<aside class="w-64 fixed left-0 top-16 bottom-0 glass-panel z-40 flex flex-col py-8 px-6">
+<!-- Context Block -->
+<div class="mb-10">
+<p class="text-[10px] space-grotesk uppercase tracking-[0.2em] opacity-40 mb-1">CURRENT ORBIT</p>
+<h2 class="text-xl space-grotesk font-bold text-primary-container leading-tight mb-1">Backend Engineering</h2>
+<p class="text-[10px] space-grotesk uppercase tracking-[0.2em] opacity-40">ROLE FORUM</p>
+</div>
+<!-- Navigation Links -->
+<div class="flex-grow">
+<p class="text-[10px] space-grotesk uppercase tracking-[0.2em] opacity-30 mb-6">FREQUENCY BANDS</p>
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg solar-gradient text-on-primary font-bold transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-lg">radar</span>
+<span class="text-[11px] space-grotesk uppercase tracking-widest">ALL TRANSMISSIONS</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg opacity-60 hover:opacity-100 hover:bg-surface-container-high transition-all text-on-surface" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="sensors">sensors</span>
+<span class="text-[11px] space-grotesk uppercase tracking-widest">INTERVIEW SIGNALS</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg opacity-60 hover:opacity-100 hover:bg-surface-container-high transition-all text-on-surface" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="rocket_launch">rocket_launch</span>
+<span class="text-[11px] space-grotesk uppercase tracking-widest">MISSION BRIEFINGS</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg opacity-60 hover:opacity-100 hover:bg-surface-container-high transition-all text-on-surface" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="monitoring">monitoring</span>
+<span class="text-[11px] space-grotesk uppercase tracking-widest">OPEN DISCUSSIONS</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg opacity-60 hover:opacity-100 hover:bg-surface-container-high transition-all text-on-surface" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="warning">warning</span>
+<span class="text-[11px] space-grotesk uppercase tracking-widest">DISTRESS BEACONS</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Bottom CTA -->
+<button class="mt-auto glass-panel ghost-border rounded-lg py-4 px-4 flex items-center justify-between group hover:border-primary-container/50 transition-colors">
+<span class="text-[11px] space-grotesk font-bold uppercase tracking-widest">GO TO AI MENTOR</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</aside>
+<!-- Main Feed Area -->
+<main class="ml-64 flex-grow overflow-y-auto scroll-smooth">
+<div class="max-w-4xl mx-auto py-12 px-8">
+<!-- Feed Header -->
+<header class="flex items-end justify-between mb-12">
+<div>
+<h1 class="text-4xl space-grotesk font-bold tracking-tight mb-2">SIGNAL FEED</h1>
+<p class="text-on-surface-variant/60 font-body text-sm">Monitoring real-time telemetry from the backend engineering void.</p>
+</div>
+<button class="solar-gradient text-on-primary px-6 py-3 rounded-lg space-grotesk font-bold text-xs uppercase tracking-widest flex items-center gap-2 glow-hover shadow-lg">
+<span class="material-symbols-outlined text-lg">broadcast_on_home</span>
+                        TRANSMIT SIGNAL
+                    </button>
+</header>
+<!-- Filter Pills -->
+<div class="flex items-center gap-3 mb-10 overflow-x-auto pb-2">
+<button class="px-5 py-2 rounded-full solar-gradient text-on-primary space-grotesk text-[10px] font-bold uppercase tracking-widest">TRENDING</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface/60 hover:text-on-surface space-grotesk text-[10px] font-bold uppercase tracking-widest transition-colors">NEWEST</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface/60 hover:text-on-surface space-grotesk text-[10px] font-bold uppercase tracking-widest transition-colors">MOST AMPLIFIED</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface/60 hover:text-on-surface space-grotesk text-[10px] font-bold uppercase tracking-widest transition-colors">UNANSWERED</button>
+</div>
+<!-- Posts Stack -->
+<div class="space-y-6">
+<!-- Post 1 -->
+<article class="bg-surface-container-low ghost-border rounded-xl p-8 hover:bg-surface-container-high transition-colors group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<span class="text-[10px] space-grotesk font-bold text-primary-container tracking-[0.15em]">INTERVIEW SIGNALS</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-xs text-on-surface-variant opacity-60">@arjun_dev</span>
+<span class="text-xs text-on-surface-variant opacity-40">3h ago</span>
+</div>
+<button class="material-symbols-outlined opacity-30 hover:opacity-100 transition-opacity">more_horiz</button>
+</div>
+<h3 class="text-2xl space-grotesk font-semibold mb-6 group-hover:text-primary-container transition-colors">Google L4 Backend — System Design round breakdown</h3>
+<div class="flex items-center gap-8 pt-6 border-t border-outline-variant/10">
+<button class="flex items-center gap-2 group/btn text-xs space-grotesk uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">bolt</span> AMPLIFY <span class="opacity-40">124</span>
+</button>
+<button class="flex items-center gap-2 group/btn text-xs space-grotesk uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">forum</span> ECHO <span class="opacity-40">42</span>
+</button>
+<button class="flex items-center gap-2 group/btn text-xs space-grotesk uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">share</span> RELAY
+                            </button>
+</div>
+</article>
+<!-- Post 2 -->
+<article class="bg-surface-container-low ghost-border rounded-xl p-8 hover:bg-surface-container-high transition-colors group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<span class="text-[10px] space-grotesk font-bold text-primary-container tracking-[0.15em]">MISSION BRIEFINGS</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-xs text-on-surface-variant opacity-60">@neha_codes</span>
+<span class="text-xs text-on-surface-variant opacity-40">7h ago</span>
+</div>
+<button class="material-symbols-outlined opacity-30 hover:opacity-100 transition-opacity">more_horiz</button>
+</div>
+<h3 class="text-2xl space-grotesk font-semibold mb-6 group-hover:text-primary-container transition-colors">Razorpay hiring process — 2024 updated timeline</h3>
+<div class="flex items-center gap-8 pt-6 border-t border-outline-variant/10">
+<button class="flex items-center gap-2 group/btn text-xs space-grotesk uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">bolt</span> AMPLIFY <span class="opacity-40">89</span>
+</button>
+<button class="flex items-center gap-2 group/btn text-xs space-grotesk uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">forum</span> ECHO <span class="opacity-40">15</span>
+</button>
+<button class="flex items-center gap-2 group/btn text-xs space-grotesk uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">share</span> RELAY
+                            </button>
+</div>
+</article>
+<!-- Post 3 -->
+<article class="bg-surface-container-low ghost-border rounded-xl p-8 hover:bg-surface-container-high transition-colors group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<span class="text-[10px] space-grotesk font-bold text-primary-container tracking-[0.15em]">OPEN DISCUSSIONS</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-xs text-on-surface-variant opacity-60">@rohan_backend</span>
+<span class="text-xs text-on-surface-variant opacity-40">1d ago</span>
+</div>
+<button class="material-symbols-outlined opacity-30 hover:opacity-100 transition-opacity">more_horiz</button>
+</div>
+<h3 class="text-2xl space-grotesk font-semibold mb-6 group-hover:text-primary-container transition-colors">Is microservices still the right answer for mid-stage startups?</h3>
+<div class="flex items-center gap-8 pt-6 border-t border-outline-variant/10">
+<button class="flex items-center gap-2 group/btn text-xs space-grotesk uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">bolt</span> AMPLIFY <span class="opacity-40">256</span>
+</button>
+<button class="flex items-center gap-2 group/btn text-xs space-grotesk uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">forum</span> ECHO <span class="opacity-40">112</span>
+</button>
+<button class="flex items-center gap-2 group/btn text-xs space-grotesk uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">share</span> RELAY
+                            </button>
+</div>
+</article>
+</div>
+<!-- Footer Stats (Floating in Void) -->
+<footer class="mt-20 pt-10 border-t border-outline-variant/10 flex items-center justify-between text-[10px] space-grotesk uppercase tracking-widest opacity-30">
+<div class="flex items-center gap-4">
+<span>SYSTEM STATUS: NOMINAL</span>
+<span>RECEPTION: 98%</span>
+</div>
+<span>TERMINAL V4.2.0</span>
+</footer>
+</div>
+</main>
+<!-- Right Side - Contextual Data (Extra Aesthetic Depth) -->
+<aside class="hidden xl:flex w-80 fixed right-0 top-16 bottom-0 p-8 flex-col gap-8">
+<div class="bg-surface-container-low/40 rounded-xl p-6 ghost-border">
+<h4 class="text-[10px] space-grotesk font-bold uppercase tracking-widest text-primary-container mb-6">VOID STATS</h4>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<span class="text-xs opacity-60">ACTIVE OBSERVERS</span>
+<span class="text-xl space-grotesk font-bold">1.2K</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="solar-gradient h-full w-2/3"></div>
+</div>
+<div class="flex justify-between items-end">
+<span class="text-xs opacity-60">SIGNALS BROADCAST</span>
+<span class="text-xl space-grotesk font-bold">48.9K</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="solar-gradient h-full w-5/6"></div>
+</div>
+</div>
+</div>
+<div class="rounded-xl p-6 ghost-border relative overflow-hidden group">
+<img alt="System Decorative" class="absolute inset-0 w-full h-full object-cover opacity-20 transition-transform duration-700 group-hover:scale-110" data-alt="abstract 3D render of a glowing digital core with rotating rings and golden data particles in deep space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-RjBEnCpVCZZoAnOwkYZ77NKg2EbpPTosk2lDl30oLKYJT8SQFYmgyWH0v0f-Q6Wabrk2LSXnhwHTWCAakUotOVEPqjRvI-PXHBypHiLMmKbnpG6csL1AaouDDOaD6d1141u62N-JF0Ggy2l9TUZZX90OP1uVpNWqM6sh8-r8_atnTFpLLtNioDmcmYdznAx5aQdgQZ_oB4TBz71EFrhSB8Qm4fpQZgcZYQeRbXEIwWWjWgRQlhyLQO6vRJf99CahvNEMPVWDZA"/>
+<div class="relative z-10">
+<h4 class="text-[10px] space-grotesk font-bold uppercase tracking-widest text-primary-container mb-2">PRO-TIP</h4>
+<p class="text-sm opacity-80 leading-relaxed font-body">Use 'AMPLIFY' to push high-quality technical signals to the top of the global orbit.</p>
+</div>
+</div>
+</aside>
+</div>
+</body></html>

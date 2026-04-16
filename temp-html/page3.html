@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CELESTIAL_MENTOR | AI Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#1c1a29",
+                        "primary-fixed": "#ffe16d",
+                        "outline-variant": "#4d4732",
+                        "surface-tint": "#e9c400",
+                        "surface-bright": "#3a3747",
+                        "on-secondary-fixed-variant": "#4d4632",
+                        "error-container": "#93000a",
+                        "on-surface": "#e6dff5",
+                        "on-primary-fixed-variant": "#544600",
+                        "inverse-surface": "#e6dff5",
+                        "surface-container": "#201e2d",
+                        "inverse-on-surface": "#312e3e",
+                        "surface": "#141120",
+                        "on-background": "#e6dff5",
+                        "on-secondary-fixed": "#201b0a",
+                        "on-secondary-container": "#c1b89d",
+                        "on-surface-variant": "#d0c6ab",
+                        "on-error": "#690005",
+                        "on-primary-container": "#705e00",
+                        "on-primary": "#3a3000",
+                        "surface-container-lowest": "#0f0c1b",
+                        "on-tertiary": "#3a3000",
+                        "tertiary-fixed-dim": "#e1c554",
+                        "secondary-fixed": "#ede2c6",
+                        "surface-container-highest": "#363343",
+                        "secondary": "#d0c6ab",
+                        "on-tertiary-fixed": "#221b00",
+                        "tertiary-container": "#f6d865",
+                        "tertiary": "#fff5de",
+                        "primary-fixed-dim": "#e9c400",
+                        "on-primary-fixed": "#221b00",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "secondary-container": "#4f4934",
+                        "surface-dim": "#141120",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffe16e",
+                        "surface-variant": "#363343",
+                        "primary": "#fff6df",
+                        "background": "#02010A",
+                        "surface-container-high": "#2b2838",
+                        "on-secondary": "#36301d",
+                        "primary-container": "#ffd700",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#705d00",
+                        "outline": "#999077",
+                        "secondary-fixed-dim": "#d0c6ab",
+                        "inverse-primary": "#705d00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Space Grotesk", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #02010A;
+            color: #E6DFF5;
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 80%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .solar-gradient {
+            background: linear-gradient(to right, #FFD700, #FFB77A);
+        }
+        .glass-panel {
+            background: rgba(10, 8, 28, 0.85);
+            backdrop-filter: blur(20px);
+        }
+        .ghost-border {
+            outline: 1px solid rgba(77, 71, 50, 0.15);
+        }
+        .underline-input:focus {
+            outline: none;
+            border-bottom: 2px solid #FFD700;
+        }
+        .gauge-ring {
+            stroke-dasharray: 628; /* 2 * PI * 100 */
+            stroke-dashoffset: 163; /* 74% fill */
+            transition: stroke-dashoffset 1s ease-out;
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+<!-- TopAppBar Shell -->
+<header class="bg-[#02010A]/80 backdrop-blur-xl docked full-width top-0 z-50 fixed flex justify-between items-center px-8 py-4 w-full h-[80px]">
+<div class="flex items-center gap-8">
+<div class="flex flex-col">
+<div class="text-xl font-bold tracking-tighter bg-gradient-to-r from-[#FFD700] to-[#FFB77A] bg-clip-text text-transparent font-headline">
+                    EKALAVYA
+                </div>
+<div class="flex items-center gap-2 font-label text-[10px] tracking-widest mt-0.5">
+<span class="text-secondary">HOME</span>
+<span class="text-outline-variant">/</span>
+<span class="text-primary-container">AI MENTOR</span>
+</div>
+</div>
+<nav class="hidden md:flex gap-8 ml-12">
+<a class="font-['Space_Grotesk'] tracking-tight uppercase text-xs font-bold text-[#E6DFF5]/60 hover:text-[#E6DFF5] transition-all duration-300" href="#">HOME</a>
+<a class="font-['Space_Grotesk'] tracking-tight uppercase text-xs font-bold text-[#E6DFF5]/60 hover:text-[#E6DFF5] transition-all duration-300" href="#">GALAXY</a>
+<a class="font-['Space_Grotesk'] tracking-tight uppercase text-xs font-bold text-[#FFD700] border-b-2 border-[#FFD700] pb-1" href="#">MENTOR</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary-container transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary-container transition-colors">settings</button>
+<div class="relative group">
+<div class="w-10 h-10 rounded-full border border-primary-container p-0.5 shadow-[0_0_15px_rgba(255,215,0,0.2)]">
+<img alt="User profile" class="w-full h-full rounded-full object-cover" data-alt="portrait of a professional developer in low light, dark background with subtle golden reflection" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf0wz9kQI28LTrGn9qZqLOcg_TpZKAQSbtaXbmFmx15M2AxVPFcyo7QzL_P7EKUYPdOBq3wk8NNr8wpiCB0HyZ2o9o9S-AWMDKAAdX0Swq9dz9OE__Yt3hbjJxEIcM-w30IrvAnHpxD7W-z3GqkMEvF8gJG6D4vmFE5gPe7_UjxCSzufz5Y8m07lfBhIFfXt-lFcnIpR86Z3MuQEOiiP8tTHcF7OlmmbiDHOhewD-PkRZrnAu4-3mE2izGiAfsY7CXU_TSEujX1Q"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-[80px] min-h-screen flex flex-col md:flex-row">
+<!-- LEFT COLUMN -->
+<section class="w-full md:w-[60%] p-10 flex flex-col gap-10">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></div>
+<span class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant uppercase">YOUR MENTOR</span>
+</div>
+<h1 class="font-headline text-5xl font-bold text-on-surface tracking-tight">AI Mentor</h1>
+</div>
+<!-- Profile Data Section -->
+<div class="flex flex-col gap-6">
+<h3 class="font-label text-xs tracking-widest text-outline-variant uppercase">PROFILE DATA</h3>
+<div class="grid grid-cols-1 gap-8">
+<!-- Resume Field -->
+<div class="group border-b-2 border-primary-container pb-2 transition-all">
+<label class="font-label text-[10px] text-primary-container tracking-wider uppercase">RESUME</label>
+<div class="flex justify-between items-center mt-1">
+<span class="text-on-surface font-body text-sm">resume_2024.pdf uploaded</span>
+<span class="material-symbols-outlined text-primary-container text-sm">attach_file</span>
+</div>
+</div>
+<button class="w-fit px-4 py-2 bg-transparent border border-outline-variant/30 rounded-lg text-xs font-label tracking-widest text-on-surface hover:bg-surface-container-high transition-all">
+                        UPLOAD RESUME
+                    </button>
+<div class="border-b border-outline-variant/30 pb-2">
+<label class="font-label text-[10px] text-outline-variant tracking-wider uppercase">GITHUB USERNAME</label>
+<input class="w-full bg-transparent border-none p-0 mt-1 text-on-surface font-body text-sm focus:ring-0" type="text" value="observer_void_01"/>
+</div>
+<div class="border-b border-outline-variant/30 pb-2">
+<label class="font-label text-[10px] text-outline-variant tracking-wider uppercase">LEETCODE USERNAME</label>
+<input class="w-full bg-transparent border-none p-0 mt-1 text-on-surface/40 font-body text-sm focus:ring-0" placeholder="Not linked" type="text"/>
+</div>
+</div>
+</div>
+<!-- Chat Section -->
+<div class="mt-4 flex flex-col gap-4">
+<div class="h-[340px] bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-6 overflow-y-auto ghost-border">
+<!-- AI Msg -->
+<div class="flex flex-col gap-2 max-w-[85%]">
+<span class="font-label text-[9px] text-primary-container tracking-widest">AI MENTOR</span>
+<div class="bg-surface-container-high p-4 rounded-xl rounded-tl-none text-sm text-on-surface-variant leading-relaxed">
+                            Hello Observer. I've finished scanning your latest repositories. Your architectural patterns are strong, but I've detected a significant drop in testing coverage in the core modules.
+                        </div>
+</div>
+<!-- User Msg -->
+<div class="flex flex-col gap-2 max-w-[85%] self-end items-end">
+<span class="font-label text-[9px] text-outline-variant tracking-widest">OBSERVER_01</span>
+<div class="bg-primary-container text-on-primary p-4 rounded-xl rounded-tr-none text-sm font-medium leading-relaxed shadow-[0_0_15px_rgba(255,215,0,0.1)]">
+                            What should I focus on this week?
+                        </div>
+</div>
+<!-- AI Msg -->
+<div class="flex flex-col gap-2 max-w-[85%]">
+<span class="font-label text-[9px] text-primary-container tracking-widest">AI MENTOR</span>
+<div class="bg-surface-container-high p-4 rounded-xl rounded-tl-none text-sm text-on-surface-variant leading-relaxed">
+                            Prioritise adding unit tests to the async data layer. Your GitHub activity shows 3 commits with failing CI pipelines due to mock injection errors. Let's fix that first.
+                        </div>
+</div>
+</div>
+<div class="relative">
+<input class="w-full h-14 bg-surface-container-low border-none rounded-xl px-6 pr-14 text-on-surface font-body focus:ring-1 focus:ring-primary-container/30 transition-all" placeholder="Ask your mentor..." type="text"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 solar-gradient rounded-lg flex items-center justify-center text-on-primary shadow-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN -->
+<aside class="w-full md:w-[40%] bg-surface-container-lowest p-10 flex flex-col gap-12 min-h-full">
+<div class="flex flex-col gap-8 items-center">
+<div class="w-full flex justify-start">
+<span class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant uppercase">GRAVITY SCORE</span>
+</div>
+<!-- Gauge -->
+<div class="relative flex items-center justify-center w-[200px] h-[200px]">
+<svg class="w-full h-full -rotate-90">
+<circle cx="100" cy="100" fill="transparent" r="90" stroke="#2A2A3A" stroke-width="12"></circle>
+<circle class="gauge-ring" cx="100" cy="100" fill="transparent" r="90" stroke="#FFD700" stroke-linecap="round" stroke-width="12" style="stroke-dashoffset: 163;"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline text-5xl font-bold text-primary-container">7.4</span>
+<span class="font-label text-xs text-outline-variant tracking-widest uppercase">/ 10</span>
+</div>
+<div class="absolute inset-0 rounded-full shadow-[0_0_40px_rgba(255,215,0,0.05)] pointer-events-none"></div>
+</div>
+</div>
+<!-- Breakdown -->
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-5">
+<div class="flex items-center justify-between group">
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-wider">GitHub Activity</span>
+<div class="flex items-center gap-4">
+<div class="w-24 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full solar-gradient" style="width: 80%"></div>
+</div>
+<span class="font-label text-[10px] text-primary-container">8.0</span>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-wider">Resume Density</span>
+<div class="flex items-center gap-4">
+<div class="w-24 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full solar-gradient" style="width: 65%"></div>
+</div>
+<span class="font-label text-[10px] text-primary-container">6.5</span>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-wider">Problem Solving</span>
+<div class="flex items-center gap-4">
+<div class="w-24 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full solar-gradient" style="width: 70%"></div>
+</div>
+<span class="font-label text-[10px] text-primary-container">7.0</span>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-wider">Role Alignment</span>
+<div class="flex items-center gap-4">
+<div class="w-24 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full solar-gradient" style="width: 78%"></div>
+</div>
+<span class="font-label text-[10px] text-primary-container">7.8</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recommendations -->
+<div class="mt-auto bg-surface-container-low p-6 rounded-xl border border-primary-container/20 shadow-xl">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-lg">bolt</span>
+<span class="font-label text-[10px] text-primary-container tracking-[0.2em] uppercase">WHAT TO FIX NEXT</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed font-body">
+                        Add unit tests to your last 3 repositories to improve your Gravity Score. The AI detected lack of coverage in <span class="text-on-surface font-medium">auth-service</span>.
+                    </p>
+<a class="flex items-center gap-2 text-[10px] font-label text-primary-container uppercase tracking-widest mt-2 group" href="#">
+                        Begin Optimization
+                        <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+</aside>
+</main>
+<!-- SideNavBar (Hover only shell based on JSON) -->
+<nav class="h-screen w-20 hover:w-64 transition-all duration-500 fixed left-0 top-0 z-40 bg-[#141120] flex flex-col py-6 items-center overflow-hidden shadow-[4px_0_24px_rgba(255,215,0,0.02)] translate-x-[-100%] md:translate-x-0 group/sidenav">
+<div class="flex flex-col gap-10 items-center w-full">
+<div class="w-10 h-10 rounded-lg solar-gradient flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</div>
+<div class="flex flex-col gap-8 w-full px-4">
+<div class="flex items-center gap-4 px-3 py-3 rounded-lg bg-[#363343] text-[#FFD700] shadow-[inset_4px_0_0_#FFD700]">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span class="font-label text-[10px] tracking-[0.1em] uppercase opacity-0 group-hover/sidenav:opacity-100 transition-opacity whitespace-nowrap">Core</span>
+</div>
+<div class="flex items-center gap-4 px-3 py-3 rounded-lg text-[#E6DFF5]/40 hover:bg-[#2B2838] hover:text-[#FFD700] transition-all">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label text-[10px] tracking-[0.1em] uppercase opacity-0 group-hover/sidenav:opacity-100 transition-opacity whitespace-nowrap">Pulse</span>
+</div>
+<div class="flex items-center gap-4 px-3 py-3 rounded-lg text-[#E6DFF5]/40 hover:bg-[#2B2838] hover:text-[#FFD700] transition-all">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label text-[10px] tracking-[0.1em] uppercase opacity-0 group-hover/sidenav:opacity-100 transition-opacity whitespace-nowrap">Archive</span>
+</div>
+<div class="flex items-center gap-4 px-3 py-3 rounded-lg text-[#E6DFF5]/40 hover:bg-[#2B2838] hover:text-[#FFD700] transition-all">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-label text-[10px] tracking-[0.1em] uppercase opacity-0 group-hover/sidenav:opacity-100 transition-opacity whitespace-nowrap">Nexus</span>
+</div>
+<div class="flex items-center gap-4 px-3 py-3 rounded-lg text-[#E6DFF5]/40 hover:bg-[#2B2838] hover:text-[#FFD700] transition-all">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-label text-[10px] tracking-[0.1em] uppercase opacity-0 group-hover/sidenav:opacity-100 transition-opacity whitespace-nowrap">Log</span>
+</div>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-4 w-full px-4">
+<button class="w-full py-3 solar-gradient rounded-lg text-on-primary font-label text-[10px] tracking-widest uppercase opacity-0 group-hover/sidenav:opacity-100 transition-opacity whitespace-nowrap">
+                INITIATE SYNC
+            </button>
+<div class="flex items-center gap-4 px-3 py-3 rounded-lg text-[#E6DFF5]/40 hover:text-error transition-all">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label text-[10px] tracking-[0.1em] uppercase opacity-0 group-hover/sidenav:opacity-100 transition-opacity whitespace-nowrap">Logout</span>
+</div>
+</div>
+</nav>
+</body></html>

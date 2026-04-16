@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const POSTS = [
@@ -32,6 +34,21 @@ const POSTS = [
   },
 ];
 
+const getCommentsForPost = (post, idx) => {
+  // Placeholder comments until backend wiring exists.
+  return Array.from({ length: 16 }).map((_, i) => ({
+    id: `${idx}-${i}`,
+    author: `@member_${idx + 1}_${i + 1}`,
+    time: `${Math.max(1, 16 - i)}m ago`,
+    text:
+      i % 3 === 0
+        ? `Interesting take on "${post.title}". What trade-offs did you consider?`
+        : i % 3 === 1
+          ? `I agree. Could you share a concrete example for this use-case?`
+          : `How would you measure success and prevent regressions in production?`,
+  }));
+};
+
 export default function CompanyForumPage() {
   const { orbitId, companyId } = useParams();
   const navigate = useNavigate();
@@ -42,6 +59,8 @@ export default function CompanyForumPage() {
     : orbitId === 'data' ? 'Data Science'
     : orbitId === 'product' ? 'Product Management'
     : orbitId;
+
+  const [openCommentsIdx, setOpenCommentsIdx] = useState(null);
 
   return (
     <motion.div
@@ -67,15 +86,6 @@ export default function CompanyForumPage() {
             <span className="text-[#FFD700]">{companyName.toUpperCase()} RING</span>
           </nav>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-4 text-[#E6DFF5]/60">
-            <span className="material-symbols-outlined hover:text-[#FFD700] transition-all cursor-pointer">notifications</span>
-            <span className="material-symbols-outlined hover:text-[#FFD700] transition-all cursor-pointer">settings</span>
-          </div>
-          <div className="w-10 h-10 rounded-full border-2 border-[#FFD700]/30 overflow-hidden">
-            <div className="w-full h-full bg-gradient-to-br from-[#FFD700]/40 to-[#FFB77A]/20" />
-          </div>
-        </div>
       </header>
 
       {/* Side Navigation Bar */}
@@ -88,24 +98,8 @@ export default function CompanyForumPage() {
           </div>
         </div>
 
-        <nav className="flex-grow space-y-1">
-          <p className="px-2 font-headline text-[9px] tracking-[0.2em] text-[#E6DFF5]/20 uppercase mb-4">Frequency Bands</p>
-          <a className="flex items-center gap-3 px-4 py-3 bg-[#363343] text-[#FFD700] rounded-lg group transition-all" href="#">
-            <span className="material-symbols-outlined text-[20px]">settings_input_antenna</span>
-            <span className="font-headline text-[11px] tracking-widest uppercase font-medium">All Transmissions</span>
-          </a>
-          {[
-            { icon: 'sensors', label: 'Interview Signals' },
-            { icon: 'hub', label: 'Internal Transmissions' },
-            { icon: 'auto_awesome', label: 'Offer & Joins' },
-            { icon: 'emergency', label: 'Distress Beacons' },
-          ].map(item => (
-            <a key={item.icon} className="flex items-center gap-3 px-4 py-3 text-[#E6DFF5]/40 hover:bg-[#141120] hover:text-[#E6DFF5] rounded-lg transition-all cursor-pointer" href="#">
-              <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
-              <span className="font-headline text-[11px] tracking-widest uppercase">{item.label}</span>
-            </a>
-          ))}
-        </nav>
+        {/* Frequency Bands removed (keeps only context + CTA). */}
+        <div className="flex-grow" />
 
         <div className="mt-auto">
           <button
@@ -136,7 +130,7 @@ export default function CompanyForumPage() {
         <div className="flex gap-4 mb-10 overflow-x-auto pb-4">
           <button className="px-6 py-2 bg-[#363343] text-[#FFD700] rounded-full text-[10px] font-headline tracking-widest font-bold border border-[#FFD700]/10">TRENDING</button>
           <button className="px-6 py-2 bg-transparent text-[#E6DFF5]/40 hover:text-[#E6DFF5] rounded-full text-[10px] font-headline tracking-widest hover:bg-[#141120] transition-all">NEWEST</button>
-          <button className="px-6 py-2 bg-transparent text-[#E6DFF5]/40 hover:text-[#E6DFF5] rounded-full text-[10px] font-headline tracking-widest hover:bg-[#141120] transition-all">MOST AMPLIFIED</button>
+          <button className="px-6 py-2 bg-transparent text-[#E6DFF5]/40 hover:text-[#E6DFF5] rounded-full text-[10px] font-headline tracking-widest hover:bg-[#141120] transition-all">MOST UPVOTES</button>
           <button className="px-6 py-2 bg-transparent text-[#E6DFF5]/40 hover:text-[#E6DFF5] rounded-full text-[10px] font-headline tracking-widest hover:bg-[#141120] transition-all">UNANSWERED</button>
         </div>
 
@@ -153,7 +147,7 @@ export default function CompanyForumPage() {
                     <span className="material-symbols-outlined" style={post.highlighted ? { fontVariationSettings: "'wght' 600" } : {}}>expand_less</span>
                     <span className="font-headline font-bold text-xs">{post.amplify}</span>
                   </button>
-                  <span className="text-[9px] font-headline tracking-widest text-[#E6DFF5]/20 uppercase">Amplify</span>
+                  <span className="text-[9px] font-headline tracking-widest text-[#E6DFF5]/20 uppercase">UPVOTE</span>
                 </div>
                 <div className="flex-grow">
                   <div className="flex items-center gap-3 mb-3">
@@ -167,10 +161,15 @@ export default function CompanyForumPage() {
                     {companyName} {post.title}
                   </h3>
                   <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setOpenCommentsIdx(prev => (prev === idx ? null : idx))}
+                      className="flex items-center gap-2 text-[#E6DFF5]/40 text-xs hover:text-[#FFD700] transition-colors"
+                      aria-expanded={openCommentsIdx === idx}
+                    >
                       <span className="material-symbols-outlined text-sm">chat_bubble</span>
-                      {post.echo} Echo
-                    </div>
+                      {post.echo} Comments
+                    </button>
                     <div className="flex items-center gap-2 text-[#E6DFF5]/40 text-xs">
                       <span className="material-symbols-outlined text-sm">schedule</span>
                       {post.time}
@@ -182,6 +181,40 @@ export default function CompanyForumPage() {
                   </div>
                 </div>
               </div>
+
+              {openCommentsIdx === idx && (
+                <div className="mt-5 bg-[#141120]/60 border border-[#4D4732]/30 rounded-xl p-4 max-h-[240px] overflow-y-auto">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-[10px] font-headline font-bold uppercase tracking-widest text-primary-container/90">
+                      Comments
+                    </h4>
+                    <span className="text-[10px] font-headline text-[#E6DFF5]/60">
+                      {getCommentsForPost(post, idx).length} total
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {getCommentsForPost(post, idx).map(comment => (
+                      <div key={comment.id} className="flex items-start gap-3">
+                        <div className="w-7 h-7 rounded-full bg-[#1C1A29] border border-[#4D4732]/40 flex items-center justify-center shrink-0">
+                          <span className="material-symbols-outlined text-[14px] text-[#FFD700]">person</span>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] font-headline font-bold tracking-[0.1em] uppercase text-[#FFD700]">
+                              {comment.author}
+                            </span>
+                            <span className="text-[10px] text-[#E6DFF5]/50">{comment.time}</span>
+                          </div>
+                          <p className="text-xs text-[#E6DFF5]/80 leading-relaxed break-words">
+                            {comment.text}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </article>
           ))}
         </div>

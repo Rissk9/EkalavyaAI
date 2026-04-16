@@ -1,7 +1,31 @@
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { assertSupabaseConfigured } from '../supabaseClient';
 
 export default function LoginPage() {
+  const handleGoogleLogin = async () => {
+    try {
+      const client = assertSupabaseConfigured();
+      const { error } = await client.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/ai-dashboard`,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Google OAuth failed to start:', error);
+      window.alert(
+        error?.message ||
+          'Google login could not be started. Check Supabase env vars and provider configuration.'
+      );
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -38,7 +62,11 @@ export default function LoginPage() {
 
         {/* Social Buttons */}
         <div className="w-full flex flex-col gap-3">
-          <button className="w-full h-[48px] bg-[#E6DFF5] hover:bg-white transition-colors duration-300 rounded-[12px] flex items-center justify-center gap-3 group">
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full h-[48px] bg-[#E6DFF5] hover:bg-white transition-colors duration-300 rounded-[12px] flex items-center justify-center gap-3 group"
+          >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>

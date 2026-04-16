@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const POSTS = [
@@ -28,9 +30,26 @@ const POSTS = [
   },
 ];
 
+const getCommentsForPost = (post, idx) => {
+  // Placeholder comment data (no backend wired yet).
+  // Seed it so each expanded thread looks unique and has enough entries to scroll.
+  return Array.from({ length: 14 }).map((_, i) => ({
+    id: `${idx}-${i}`,
+    author: `@member_${idx + 1}_${i + 1}`,
+    time: `${Math.max(1, 14 - i)}m ago`,
+    text:
+      i % 3 === 0
+        ? `Great point on "${post.title}". What evidence supports the proposed direction?`
+        : i % 3 === 1
+          ? `I agree with the signal strength. Would you share an example implementation approach?`
+          : `How would you validate this in production without introducing excessive noise?`,
+  }));
+};
+
 export default function RoleForumPage() {
   const { orbitId } = useParams();
   const navigate = useNavigate();
+  const [openCommentsIdx, setOpenCommentsIdx] = useState(null);
 
   const orbitDisplay = orbitId === 'backend' ? 'Backend Engineering'
     : orbitId === 'frontend' ? 'Frontend Engineering'
@@ -54,34 +73,20 @@ export default function RoleForumPage() {
         <div className="flex items-center gap-8">
           {/* Brand Logo */}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 border-2 border-primary-container rounded flex items-center justify-center">
-              <div className="w-4 h-4 border border-primary-container rotate-45" />
-            </div>
-            <button onClick={() => navigate('/')} className="text-xl font-bold tracking-tighter text-primary-container font-headline">CELESTIAL_VOID</button>
+            <button onClick={() => navigate('/')} className="text-xl font-bold tracking-tighter text-primary-container font-headline">EKALAVYA</button>
           </div>
           {/* Breadcrumbs */}
-          <div className="hidden md:flex items-center gap-2 text-[10px] font-headline uppercase tracking-widest opacity-40">
-            <span className="cursor-pointer hover:opacity-100 transition-opacity" onClick={() => navigate('/')}>HOME</span>
-            <span className="material-symbols-outlined text-[12px]">chevron_right</span>
-            <span className="cursor-pointer hover:opacity-100 transition-opacity" onClick={() => navigate(`/orbit/${orbitId}`)}>{orbitDisplay.toUpperCase()}</span>
-            <span className="material-symbols-outlined text-[12px]">chevron_right</span>
+          <div className="hidden md:flex items-center gap-2 text-[10px] font-headline uppercase tracking-widest">
+            <span className="cursor-pointer opacity-50 hover:opacity-100 hover:text-[#FFD700] transition-colors" onClick={() => navigate('/')}>HOME</span>
+            <span className="material-symbols-outlined text-[12px] opacity-40">chevron_right</span>
+            <span className="cursor-pointer opacity-50 hover:opacity-100 hover:text-[#FFD700] transition-colors" onClick={() => navigate(`/orbit/${orbitId}`)}>{orbitDisplay.toUpperCase()}</span>
+            <span className="material-symbols-outlined text-[12px] opacity-40">chevron_right</span>
             <span className="text-primary-container opacity-100">FORUM</span>
           </div>
         </div>
         <div className="flex items-center gap-10">
-          <div className="hidden lg:flex items-center gap-8 text-xs font-headline uppercase tracking-widest font-medium">
-            <button onClick={() => navigate('/')} className="text-primary-container border-b border-primary-container pb-1">HOME</button>
-            <button onClick={() => navigate('/')} className="opacity-70 hover:opacity-100 transition-opacity">GALAXY</button>
-            <button onClick={() => navigate('/ai-dashboard')} className="opacity-70 hover:opacity-100 transition-opacity">MENTOR</button>
-          </div>
           <div className="flex items-center gap-4">
-            <button className="material-symbols-outlined opacity-70 hover:text-primary-container transition-colors">notifications</button>
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden shadow-[0_0_15px_rgba(255,215,0,0.3)]">
-                <div className="w-full h-full bg-gradient-to-br from-[#FFD700]/40 to-[#FFB77A]/20" />
-              </div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#02010A] rounded-full" />
-            </div>
+            {/* Removed notification/avatar controls to declutter the general forum UI */}
           </div>
         </div>
       </nav>
@@ -96,58 +101,24 @@ export default function RoleForumPage() {
             <p className="text-[10px] font-headline uppercase tracking-[0.2em] opacity-40">ROLE FORUM</p>
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex-grow">
-            <p className="text-[10px] font-headline uppercase tracking-[0.2em] opacity-30 mb-6">FREQUENCY BANDS</p>
-            <nav className="space-y-2">
-              <a className="flex items-center gap-3 px-4 py-3 rounded-lg solar-gradient text-on-primary font-bold transition-transform active:scale-[0.98]" href="#">
-                <span className="material-symbols-outlined text-lg">radar</span>
-                <span className="text-[11px] font-headline uppercase tracking-widest">ALL TRANSMISSIONS</span>
-              </a>
-              {[
-                { icon: 'sensors', label: 'INTERVIEW SIGNALS' },
-                { icon: 'rocket_launch', label: 'MISSION BRIEFINGS' },
-                { icon: 'monitoring', label: 'OPEN DISCUSSIONS' },
-                { icon: 'warning', label: 'DISTRESS BEACONS' },
-              ].map(item => (
-                <a key={item.icon} className="flex items-center gap-3 px-4 py-3 rounded-lg opacity-60 hover:opacity-100 hover:bg-surface-container-high transition-all text-on-surface cursor-pointer" href="#">
-                  <span className="material-symbols-outlined text-lg">{item.icon}</span>
-                  <span className="text-[11px] font-headline uppercase tracking-widest">{item.label}</span>
-                </a>
-              ))}
-            </nav>
-          </div>
-
-          {/* Sidebar Bottom CTA */}
-          <button
-            onClick={() => navigate('/ai-dashboard')}
-            className="mt-auto glass-panel ghost-border rounded-lg py-4 px-4 flex items-center justify-between group hover:border-primary-container/50 transition-colors"
-          >
-            <span className="text-[11px] font-headline font-bold uppercase tracking-widest">GO TO AI MENTOR</span>
-            <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
-          </button>
         </aside>
 
         {/* Main Feed Area */}
         <main className="ml-64 flex-grow overflow-y-auto scroll-smooth">
           <div className="max-w-4xl mx-auto py-12 px-8">
             {/* Feed Header */}
-            <header className="flex items-end justify-between mb-12">
+            <header className="flex items-end justify-start mb-12">
               <div>
                 <h1 className="text-4xl font-headline font-bold tracking-tight mb-2">SIGNAL FEED</h1>
                 <p className="text-on-surface-variant/60 font-body text-sm">Monitoring real-time telemetry from the {orbitId} engineering void.</p>
               </div>
-              <button className="solar-gradient text-on-primary px-6 py-3 rounded-lg font-headline font-bold text-xs uppercase tracking-widest flex items-center gap-2 glow-hover shadow-lg">
-                <span className="material-symbols-outlined text-lg">broadcast_on_home</span>
-                TRANSMIT SIGNAL
-              </button>
             </header>
 
             {/* Filter Pills */}
             <div className="flex items-center gap-3 mb-10 overflow-x-auto pb-2">
               <button className="px-5 py-2 rounded-full solar-gradient text-on-primary font-headline text-[10px] font-bold uppercase tracking-widest">TRENDING</button>
               <button className="px-5 py-2 rounded-full bg-surface-container-high text-on-surface/60 hover:text-on-surface font-headline text-[10px] font-bold uppercase tracking-widest transition-colors">NEWEST</button>
-              <button className="px-5 py-2 rounded-full bg-surface-container-high text-on-surface/60 hover:text-on-surface font-headline text-[10px] font-bold uppercase tracking-widest transition-colors">MOST AMPLIFIED</button>
+              <button className="px-5 py-2 rounded-full bg-surface-container-high text-on-surface/60 hover:text-on-surface font-headline text-[10px] font-bold uppercase tracking-widest transition-colors">MOST UPVOTED</button>
               <button className="px-5 py-2 rounded-full bg-surface-container-high text-on-surface/60 hover:text-on-surface font-headline text-[10px] font-bold uppercase tracking-widest transition-colors">UNANSWERED</button>
             </div>
 
@@ -167,15 +138,56 @@ export default function RoleForumPage() {
                   <h3 className="text-2xl font-headline font-semibold mb-6 group-hover:text-primary-container transition-colors">{post.title}</h3>
                   <div className="flex items-center gap-8 pt-6 border-t border-outline-variant/10">
                     <button className="flex items-center gap-2 text-xs font-headline uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
-                      <span className="material-symbols-outlined text-lg">bolt</span> AMPLIFY <span className="opacity-40">{post.amplify}</span>
+                      <span className="material-symbols-outlined text-lg">bolt</span> UPVOTE <span className="opacity-40">{post.amplify}</span>
                     </button>
-                    <button className="flex items-center gap-2 text-xs font-headline uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
-                      <span className="material-symbols-outlined text-lg">forum</span> ECHO <span className="opacity-40">{post.echo}</span>
+                    <button
+                      type="button"
+                      onClick={() => setOpenCommentsIdx(prev => (prev === idx ? null : idx))}
+                      aria-expanded={openCommentsIdx === idx}
+                      className="flex items-center gap-2 text-xs font-headline uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all"
+                    >
+                      <span className="material-symbols-outlined text-lg">forum</span> COMMENTS <span className="opacity-40">{post.echo}</span>
                     </button>
                     <button className="flex items-center gap-2 text-xs font-headline uppercase tracking-widest font-bold opacity-60 hover:opacity-100 hover:text-primary-container transition-all">
                       <span className="material-symbols-outlined text-lg">share</span> RELAY
                     </button>
                   </div>
+
+                  {openCommentsIdx === idx && (
+                    <div className="mt-6 bg-surface-container-lowest/60 rounded-lg border border-outline-variant/20 p-4 max-h-[260px] overflow-y-auto">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="font-headline text-[10px] tracking-[0.2em] uppercase text-primary-container/90">
+                          Comments
+                        </span>
+                        <span className="text-[10px] text-on-surface-variant/70 font-headline">
+                          {getCommentsForPost(post, idx).length} total
+                        </span>
+                      </div>
+
+                      <div className="space-y-3">
+                        {getCommentsForPost(post, idx).map(comment => (
+                          <div key={comment.id} className="flex items-start gap-3">
+                            <div className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0 border border-outline-variant/20">
+                              <span className="material-symbols-outlined text-[14px] text-primary-container">person</span>
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-headline text-[10px] tracking-[0.1em] uppercase text-primary-container">
+                                  {comment.author}
+                                </span>
+                                <span className="text-[10px] text-on-surface-variant/60 font-body">
+                                  {comment.time}
+                                </span>
+                              </div>
+                              <p className="text-xs text-on-surface-variant/90 leading-relaxed break-words">
+                                {comment.text}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
@@ -210,12 +222,6 @@ export default function RoleForumPage() {
               <div className="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
                 <div className="solar-gradient h-full w-5/6" />
               </div>
-            </div>
-          </div>
-          <div className="rounded-xl p-6 ghost-border relative overflow-hidden group bg-surface-container-low/20">
-            <div className="relative z-10">
-              <h4 className="text-[10px] font-headline font-bold uppercase tracking-widest text-primary-container mb-2">PRO-TIP</h4>
-              <p className="text-sm opacity-80 leading-relaxed font-body">Use 'AMPLIFY' to push high-quality technical signals to the top of the global orbit.</p>
             </div>
           </div>
         </aside>

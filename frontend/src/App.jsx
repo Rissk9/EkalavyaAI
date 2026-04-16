@@ -7,6 +7,7 @@ import AiDashboardPage from './pages/AiDashboardPage';
 import OrbitPage from './pages/OrbitPage';
 import RoleForumPage from './pages/RoleForumPage';
 import CompanyForumPage from './pages/CompanyForumPage';
+import Navbar from './components/Navbar';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -27,7 +28,8 @@ function AnimatedRoutes() {
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-background text-on-surface font-body overflow-x-hidden relative">
+      <div className="min-h-screen bg-background text-on-surface font-body overflow-x-hidden relative pt-20">
+        <Navbar />
         <AnimatedRoutes />
       </div>
     </Router>

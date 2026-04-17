@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from backend.config import get_settings
 from backend.graph import get_graph
 from backend.database import db_manager
+from backend.interview import router as interview_router
 
 
 
@@ -52,6 +53,8 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
+app.include_router(interview_router)
 
 # ---------------------------------------------------------------------------
 # Request / Response schemas

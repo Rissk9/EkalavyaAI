@@ -1,0 +1,31 @@
+# ============================================================
+# AI Interviewer — LiveKit + LangGraph Voice & Video Agent
+# ============================================================
+# Install with:  pip install -r requirements.txt
+# Or use uv:     uv pip install -r requirements.txt
+# ============================================================
+
+# LiveKit Agents core
+livekit-agents>=1.1.6
+
+# LiveKit plugins
+livekit-plugins-deepgram>=1.0.0
+livekit-plugins-cartesia>=1.0.0
+livekit-plugins-silero>=1.0.0
+livekit-plugins-simli>=0.3.0
+livekit-plugins-langchain>=0.2.0
+livekit-plugins-turn-detector>=1.0.0
+
+# LangChain / LangGraph
+langgraph>=0.4.0
+langchain-core>=0.3.0
+langchain-community>=0.3.0
+langchain-text-splitters>=0.3.0
+
+# RAG dependencies
+chromadb>=0.5.0
+pypdf>=4.0.0
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.32.0

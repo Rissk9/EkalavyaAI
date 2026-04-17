@@ -104,7 +104,7 @@ export default function OrbitPage() {
         </section>
 
         {/* Feature Modules Section */}
-        <div className="grid md:grid-cols-2 gap-8 items-start">
+        <div className="grid md:grid-cols-3 gap-8 items-start">
           {/* Forum Card */}
           <div
             onClick={() => navigate(`/forum/${orbitId}`)}
@@ -145,6 +145,28 @@ export default function OrbitPage() {
             <div className="relative z-10 mt-8 flex justify-start">
               <button className="glass-panel ghost-border text-[#FFD700] font-headline font-bold py-3 px-6 rounded-lg tracking-tight hover:bg-surface-container-highest transition-all active:scale-95">
                 OPEN AI DASHBOARD
+              </button>
+            </div>
+          </div>
+
+          {/* Mock Interview Card */}
+          <div
+            onClick={() => navigate(`/mock-interview/${orbitId}`)}
+            className="relative overflow-hidden group rounded-xl bg-surface-container-low p-7 flex flex-col justify-between min-h-[280px] max-w-[520px] w-full ghost-border transition-all duration-500 hover:bg-surface-container cursor-pointer"
+          >
+            <div className="absolute -right-16 -top-16 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
+              <span className="material-symbols-outlined text-[240px]" style={{ fontVariationSettings: "'opsz' 48" }}>mic</span>
+            </div>
+            <div className="relative z-10">
+              <div className="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-[#FFD700] text-[20px]">record_voice_over</span>
+              </div>
+              <h3 className="font-headline text-2xl font-bold mb-3">Mock Interview</h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed max-w-sm">Practice with Alex, our AI voice interviewer. Real-time mock interviews tailored for {orbitDisplay} roles with instant feedback.</p>
+            </div>
+            <div className="relative z-10 mt-8 flex justify-start">
+              <button className="glass-panel ghost-border text-[#FFD700] font-headline font-bold py-3 px-6 rounded-lg tracking-tight hover:bg-surface-container-highest transition-all active:scale-95">
+                START INTERVIEW
               </button>
             </div>
           </div>

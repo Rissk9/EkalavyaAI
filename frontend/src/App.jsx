@@ -7,6 +7,7 @@ import AiDashboardPage from './pages/AiDashboardPage';
 import OrbitPage from './pages/OrbitPage';
 import RoleForumPage from './pages/RoleForumPage';
 import CompanyForumPage from './pages/CompanyForumPage';
+import MockInterviewPage from './pages/MockInterviewPage';
 import Navbar from './components/Navbar';
 
 function AnimatedRoutes() {
@@ -18,6 +19,7 @@ function AnimatedRoutes() {
         <Route path="/" element={<HomePage />} />
         <Route path="/ai-dashboard" element={<AiDashboardPage />} />
         <Route path="/orbit/:orbitId" element={<OrbitPage />} />
+        <Route path="/mock-interview/:orbitId" element={<MockInterviewPage />} />
         <Route path="/forum/:orbitId" element={<RoleForumPage />} />
         <Route path="/community/:orbitId/:companyId" element={<CompanyForumPage />} />
       </Routes>

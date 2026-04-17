@@ -46,10 +46,10 @@ export default function Navbar() {
               <li>
                 <button
                   onClick={() => window.dispatchEvent(new CustomEvent('open-resume-helper'))}
-                  className="flex items-center gap-2 px-6 py-2.5 ml-4 solar-gradient rounded-xl text-on-primary font-label uppercase tracking-[0.15em] text-[11px] font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition-all duration-300 animate-pulse-solar active:scale-95"
+                  className="flex items-center gap-2 px-5 py-2 ml-4 border border-[#FFD700]/30 rounded-xl text-[#FFD700] hover:bg-[#FFD700]/10 font-label uppercase tracking-[0.1em] text-[11px] transition-all duration-300 active:scale-95"
                 >
                   <span className="material-symbols-outlined text-sm font-bold">auto_awesome</span>
-                  <span>RESUME HELPER</span>
+                  <span>RESUME GUIDE</span>
                 </button>
               </li>
             )}

@@ -22,8 +22,23 @@ export default function AiDashboardPage() {
     try { return JSON.parse(localStorage.getItem('ekalavya_ats')) || null; }
     catch { return null; }
   });
+
+  // Auto-fetch orbit role from navigation state or localStorage
+  const [activeRole, setActiveRole] = useState(() => {
+    const fromNav = location.state?.orbitRole;
+    if (fromNav) {
+      localStorage.setItem('ekalavya_active_role', fromNav);
+      return fromNav;
+    }
+    return localStorage.getItem('ekalavya_active_role') || '';
+  });
+
+  const roleGreeting = activeRole
+    ? `Hello! I'm Lakshya, your personal AI mentor. I see you're exploring the **${activeRole}** orbit — I'll tailor all my advice for that role. Let's chart your trajectory! 🚀`
+    : "Hello this is Lakshya, your personal AI mentor who is here to help you in all your job related endeavours";
+
   const [messages, setMessages] = useState([
-    { role: 'ai', label: 'AI MENTOR', text: "Hello this is Lakshya, your personal AI mentor who is here to help you in all your job related endeavours" },
+    { role: 'ai', label: 'AI MENTOR', text: roleGreeting },
   ]);
   const [input, setInput] = useState('');
   const [isResumeHelperOpen, setIsResumeHelperOpen] = useState(false);
@@ -103,6 +118,7 @@ export default function AiDashboardPage() {
         message: userText,
         github_username: github ? github : null,
         leetcode_username: leetcode ? leetcode : null,
+        role: activeRole || null,
         summary,
       }),
     })
@@ -388,6 +404,33 @@ export default function AiDashboardPage() {
 
         {/* RIGHT COLUMN */}
         <aside className="w-full md:w-[40%] bg-surface-container-lowest p-8 md:p-10 flex flex-col gap-8 h-full min-h-0 overflow-hidden">
+          {/* Active Orbit Role Context */}
+          {activeRole && (
+            <div className="flex flex-col gap-3 shrink-0 mb-2">
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#FFD700]/5 border border-[#FFD700]/15">
+                <span className="material-symbols-outlined text-[#FFD700] text-lg">target</span>
+                <div className="flex flex-col">
+                  <span className="font-label text-[9px] tracking-[0.2em] text-[#FFD700]/60 uppercase">Active Orbit</span>
+                  <span className="font-headline text-sm font-bold text-[#FFD700]">{activeRole}</span>
+                </div>
+                <button
+                  onClick={() => { setActiveRole(''); localStorage.removeItem('ekalavya_active_role'); }}
+                  className="ml-auto text-[#FFD700]/40 hover:text-[#FFD700] transition-colors"
+                  title="Clear role context"
+                >
+                  <span className="material-symbols-outlined text-sm">close</span>
+                </button>
+              </div>
+              <button 
+                onClick={() => navigate(`/mock-interview/${activeRole.toLowerCase().replace(/ /g, '-')}`)}
+                className="w-full px-4 py-3 glass-panel ghost-border text-[#FFD700] font-headline font-bold rounded-lg text-xs tracking-widest uppercase hover:bg-surface-container-highest transition-all flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">mic</span>
+                START MOCK INTERVIEW
+              </button>
+            </div>
+          )}
+
           {/* Profile Data */}
           <div className="flex flex-col gap-4 shrink-0">
             <div className="flex items-center gap-2">
@@ -460,14 +503,14 @@ export default function AiDashboardPage() {
 
           <div className="flex flex-col gap-6 items-center shrink-0 overflow-y-auto">
             <div className="w-full flex items-center justify-between">
-              <span className="font-label text-[10px] tracking-[0.2em] text-on-surface-variant uppercase">ATS SCORE</span>
+              <span className="font-label text-xs tracking-[0.2em] text-on-surface-variant uppercase">ATS SCORE</span>
               <button 
                 onClick={() => setShowJdInput(!showJdInput)}
-                className={`flex items-center gap-1.5 px-2 py-1 rounded text-[9px] font-label tracking-wider transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded text-[11px] font-label tracking-wider transition-all ${
                   showJdInput ? 'bg-primary-container text-on-primary' : 'bg-surface-container-high text-on-surface-variant hover:text-primary-container'
                 }`}
               >
-                <span className="material-symbols-outlined text-xs">
+                <span className="material-symbols-outlined text-sm">
                   {showJdInput ? 'close' : 'description'}
                 </span>
                 {showJdInput ? 'CLOSE JD' : 'SET JOB JD'}

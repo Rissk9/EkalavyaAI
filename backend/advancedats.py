@@ -414,9 +414,16 @@ class SkillMatcher:
         text_lower = text.lower()
         skill_matches = []
         
+        def safe_count(term: str, target_text: str) -> int:
+            # Safely count whole words only, allowing for special chars like c++
+            escaped_term = re.escape(term)
+            # Match if not surrounded by other letters/numbers
+            pattern = rf'(?<![a-z0-9]){escaped_term}(?![a-z0-9])'
+            return len(re.findall(pattern, target_text))
+            
         # Check direct skill mentions
         for skill in self.all_skills:
-            count = text_lower.count(skill)
+            count = safe_count(skill, text_lower)
             if count > 0:
                 skill_matches.append((skill, count))
         
@@ -424,7 +431,7 @@ class SkillMatcher:
         for canonical, synonyms in SKILL_SYNONYMS.items():
             if canonical in self.skill_weights:
                 for synonym in synonyms:
-                    count = text_lower.count(synonym)
+                    count = safe_count(synonym, text_lower)
                     if count > 0:
                         # Aggregate with canonical
                         existing = next(
@@ -433,8 +440,8 @@ class SkillMatcher:
                             None
                         )
                         if existing:
-                            idx, skill = existing
-                            skill_matches[idx] = (skill, skill_matches[idx][1] + count)
+                            idx, skill_name = existing
+                            skill_matches[idx] = (skill_name, skill_matches[idx][1] + count)
                         else:
                             skill_matches.append((canonical, count))
         
@@ -453,78 +460,53 @@ class SkillMatcher:
         # Calculate scores with weights
         total_weight = sum(self.skill_weights.values())
         if jd_keywords:
-            # Add dynamic weights for JD keywords
-            jd_weight_total = len(jd_keywords) * 0.1  # Arbitrary weight for each JD keyword
+            # Add dynamic weights for JD keywords to the total theoretical possible
+            jd_weight_total = len(jd_keywords) * 0.15 
             total_weight += jd_weight_total
 
         matched_score = 0
         matched_details = {}
         
         for skill, count in found_skills:
-            weight = self.skill_weights.get(skill, 0.05) # Small base weight if not in role
+            # Base weight for the skill
+            weight = self.skill_weights.get(skill, 0.05) 
             
             # Boost if found in JD
             if jd_keywords and skill in jd_keywords:
-                weight += 0.5 # SIGNIFICANT BOOST from previous 0.1
+                weight += 0.15 
             
-            matched_score += min(count, 3) * weight * 20 # Up to 3 mentions count
+            # Use a confidence multiplier based on mentions (max out at 3 mentions)
+            confidence = min(count / 3.0, 1.0)
+            
+            # A skill score contribution is its weight * confidence
+            matched_score += weight * confidence
+            
             matched_details[skill] = {
                 "count": count,
-                "weight": weight
+                "weight": weight,
+                "confidence": confidence
             }
             
-        # Normalize and cap
-        skill_score = min((matched_score / total_weight) * 10, 100) if total_weight > 0 else 0
+        # The skill score is a percentage of the total possible weight. 
+        # Since candidates rarely have 100% of all required skills, we double the coverage multiplier to keep it encouraging.
+        skill_coverage = (matched_score / total_weight) if total_weight > 0 else 0
+        skill_score = min(skill_coverage * 200, 100)
+
+        
+        missing_skills = {
+            s: w for s, w in self.skill_weights.items() if s not in matched_details
+        }
+        
+        # Sort missing skills by weight
+        missing_skills = dict(
+            sorted(missing_skills.items(), key=lambda x: x[1], reverse=True)[:5]
+        )
         
         return skill_score, {
             "matched_skills": matched_details,
             "total_matched": len(found_skills),
-            "missing_skills": {s: w for s, w in self.skill_weights.items() if s not in matched_details}
-        }
-        skill_matches = self.extract_skills_from_text(resume_text)
-        
-        matched_skills = {}
-        skill_coverage = {}
-        
-        for skill, occurrence_count in skill_matches:
-            weight = self.skill_weights.get(skill, 0)
-            if weight > 0:
-                # Confidence increases with mentions (up to 3 mentions = max confidence)
-                confidence = min(occurrence_count / 3, 1.0)
-                matched_skills[skill] = {
-                    "weight": weight,
-                    "occurrences": occurrence_count,
-                    "confidence": confidence,
-                    "weighted_score": weight * confidence
-                }
-        
-        # Calculate coverage for each skill type
-        total_weight = sum(self.skill_weights.values())
-        matched_weight = sum(
-            m["weighted_score"] for m in matched_skills.values()
-        )
-        
-        skill_coverage = matched_weight / total_weight if total_weight > 0 else 0
-        skill_score = skill_coverage * 100
-        
-        missing_skills = {
-            skill: weight 
-            for skill, weight in self.skill_weights.items() 
-            if skill not in matched_skills
-        }
-        missing_skills = dict(
-            sorted(
-                missing_skills.items(), 
-                key=lambda x: x[1], 
-                reverse=True
-            )[:5]  # Top 5 missing skills
-        )
-        
-        return skill_score, {
-            "matched_skills": matched_skills,
             "missing_skills": missing_skills,
-            "coverage_percentage": round(skill_coverage * 100, 2),
-            "total_matched": len(matched_skills),
+            "coverage_percentage": round(skill_score, 2),
             "total_required": len(self.skill_weights)
         }
 
@@ -1015,7 +997,9 @@ class RelevanceAnalyzer:
             
             # Calculate similarity
             similarity = cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0]
-            relevance_score = similarity * 100
+            # TF-IDF cosine similarity is notoriously harsh for short docs (typically yielding 0.1-0.3). 
+            # We scale it with a baseline floor so the score feels realistic and encouraging.
+            relevance_score = min(similarity * 200 + 40, 100)
             
         except Exception as e:
             print(f"Warning: Similarity calculation failed: {e}")
